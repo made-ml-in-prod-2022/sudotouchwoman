@@ -13,6 +13,7 @@ split_params:
 
 feature_params:
   target: "diag"
+  numeric_imputer_strategy: "mean"
   random_state: $"data_params.random_state"
 
 training_params:
