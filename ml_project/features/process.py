@@ -96,6 +96,20 @@ def preprocessing_pipeline(
     num_transformer: Pipeline,
     cat_transformer: Pipeline,
 ) -> ColumnTransformer:
+    """
+    Combines imputers with transformers
+    to create the endgame preprocessor
+
+    :param cat_features: List[str], categorical features
+    :param num_features: List[str], numerical features
+    :param num_imputer_strategy: str,
+    must be a valid SimpleImputer strategy type
+    :param num_transformer: Pipeline,
+    probably scaler/PCA for numerical features
+    :param cat_transformer: Pipeline, probably encoders
+
+    :rtype ColumnTransformer, the complete preprocessing pipeline
+    """
     log.debug(msg="Creating imputer for missing values")
     num_imputer = SimpleImputer(strategy=num_imputer_strategy)
     cat_imputer = SimpleImputer(strategy="most_frequent")

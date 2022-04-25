@@ -7,5 +7,6 @@ class EstimatorConfig:
     model_type: str
     pos_label: str
     neg_label: str
+    model_artifact_path: str
     model_params: Dict[str, Any]
     random_state: int = field(default=42)

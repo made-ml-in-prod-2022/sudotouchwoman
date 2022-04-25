@@ -47,5 +47,5 @@ def split_data(
         target,
         test_size=params.validation,
         random_state=params.random_state,
-        stratify=target
+        stratify=target,
     )

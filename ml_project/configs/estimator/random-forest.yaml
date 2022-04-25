@@ -1,0 +1,12 @@
+model_artifact_path: ${dir_prefix}/artifacts/random-forest.pkl
+
+model_type: RandomForest
+pos_label: M
+neg_label: B
+model_params:
+  n_estimators: 100
+  max_depth: 4
+  max_features: sqrt
+  bootstrap: True
+  criterion: gini
+  random_state: ${dataset.random_state}

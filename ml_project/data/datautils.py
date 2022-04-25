@@ -13,12 +13,25 @@ log = logging.getLogger(__name__)
 def download_file(
     url: str, local_filename: str = None, overwrite: bool = False
 ) -> str:
+    """
+    Downloads file from given url.
+    Check if such file is present before requesting
+
+    :param url, str - web resource to fetch the file from
+    :param local_filename, str (default None) -
+    filename to save the file to.
+    If not specified, the filename is deduced from the url
+    :param overwrite, bool (default False) - whether to override the
+    existing file
+
+    :rtype str, local filename of the obtained resource
+    """
     if not local_filename:
         *_, local_filename = url.split("/")
-        log.debug(msg=f"No filename provided, will save as {local_filename}")
+        log.warning(msg=f"No filename provided, will save as {local_filename}")
 
     if not overwrite and isfile(local_filename):
-        log.info(msg=f"File already exists: {local_filename}")
+        log.warning(msg=f"File already exists: {local_filename}")
         return local_filename
 
     with requests.get(url, stream=True) as r:
@@ -32,6 +45,12 @@ def download_file(
 
 
 def create_dataset(params: DatasetConfig) -> None:
+    """
+    Check whether the dataset file is present,
+    download the file, if required
+
+    :param params, DatasetConfig with required settings
+    """
     if not isdir(params.dataset_dir):
         mkdir(params.dataset_dir)
         log.info(msg=f"Created dir for raw data: {params.dataset_dir}")

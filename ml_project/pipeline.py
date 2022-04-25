@@ -40,10 +40,10 @@ def main(cfg: OmegaConf):
     # otherwise these would be dicts
     resolve_cfg(root_cfg)
 
-    data_cfg = root_cfg.data_params
-    split_cfg = root_cfg.split_params
-    feature_cfg = root_cfg.feature_params
-    train_cfg = root_cfg.training_params
+    data_cfg = root_cfg.dataset
+    split_cfg = root_cfg.splitter
+    feature_cfg = root_cfg.feature
+    train_cfg = root_cfg.estimator
 
     create_dataset(data_cfg)
     raw_data = read_dataset(data_cfg)
@@ -101,8 +101,8 @@ def main(cfg: OmegaConf):
     )
     log.info(msg=f"{metrics}")
 
-    log.info(msg=f"Dumps artifact to {root_cfg.model_artifact_path}")
-    dump_pipeline(end_to_end_pipeline, root_cfg.model_artifact_path)
+    log.info(msg=f"Dumps artifact to {train_cfg.model_artifact_path}")
+    dump_pipeline(end_to_end_pipeline, train_cfg.model_artifact_path)
     log.info(msg="Training pipeline finished")
 
 

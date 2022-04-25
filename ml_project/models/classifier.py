@@ -87,6 +87,7 @@ def get_metrics(
     prediction: np.ndarray,
     params: EstimatorConfig,
 ) -> Report:
+    # required as the model is trained on probably non-numeric labels
     pos_label = params.pos_label
 
     metrics = {
@@ -117,7 +118,7 @@ def dump_pipeline(pipeline: Pipeline, dump_to: str) -> None:
 def make_inference_pipeline(
     preprocessor: Pipeline, estimator: Estimator
 ) -> Pipeline:
-    # essentially clays together
+    # essentially stacks together
     # the preprocessing pipeline
     # and the actual classifier
     # to be dumped as an artifact

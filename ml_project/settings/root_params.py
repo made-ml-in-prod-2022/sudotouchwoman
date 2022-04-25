@@ -8,16 +8,15 @@ from .training_params import EstimatorConfig
 @dataclass
 class RootConfig:
     dir_prefix: str
-    data_params: DatasetConfig
-    feature_params: FeaturesConfig
-    training_params: EstimatorConfig
-    split_params: SplitConfig
+    dataset: DatasetConfig
+    feature: FeaturesConfig
+    estimator: EstimatorConfig
+    splitter: SplitConfig
     metrics_path: str
-    model_artifact_path: str
 
 
 def resolve_cfg(cfg: RootConfig) -> None:
-    cfg.data_params = DatasetConfig(**cfg.data_params)
-    cfg.feature_params = FeaturesConfig(**cfg.feature_params)
-    cfg.training_params = EstimatorConfig(**cfg.training_params)
-    cfg.split_params = SplitConfig(**cfg.split_params)
+    cfg.dataset = DatasetConfig(**cfg.dataset)
+    cfg.feature = FeaturesConfig(**cfg.feature)
+    cfg.estimator = EstimatorConfig(**cfg.estimator)
+    cfg.splitter = SplitConfig(**cfg.splitter)

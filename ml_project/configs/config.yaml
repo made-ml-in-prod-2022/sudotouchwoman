@@ -1,35 +1,25 @@
 defaults:
+  - _self_
+  - estimator: log-reg
   - override hydra/job_logging: dot-formatted
 
 dir_prefix: ../../..
-model_artifact_path: ${dir_prefix}/artifacts/model.pkl
 metrics_path: ${dir_prefix}/metrics/
 
-data_params:
+dataset:
   download: True
   source_url: https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data
   dataset_dir: ${dir_prefix}/data/raw
   dataset_filename: breast-cancer-dataset.csv
   random_state: 100
 
-split_params:
+splitter:
   validation: 0.2
-  random_state: ${data_params.random_state}
+  random_state: ${dataset.random_state}
 
-feature_params:
+feature:
   target: diag
   numeric_imputer_strategy: mean
-  random_state: ${data_params.random_state}
+  random_state: ${dataset.random_state}
   scaler_type: standard
   encoder_type: ohe
-
-training_params:
-  model_type: LogReg
-  pos_label: M
-  neg_label: B
-  model_params:
-    max_iter: 1500
-    penalty: elasticnet
-    l1_ratio: 0.8
-    random_state: ${data_params.random_state}
-    solver: saga
