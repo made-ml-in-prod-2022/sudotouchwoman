@@ -1,10 +1,11 @@
-model_artifact_path: ../../../artifacts/
-metrics_path: ../../../metrics/
+dir_prefix: ../../..
+model_artifact_path: ${dir_prefix}/artifacts/
+metrics_path: ${dir_prefix}/metrics/
 
 data_params:
   download: True
   source_url: https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data
-  dataset_dir: ../../../data/raw
+  dataset_dir: ${dir_prefix}/data/raw
   dataset_filename: breast-cancer-dataset.csv
   random_state: 100
 
@@ -16,6 +17,8 @@ feature_params:
   target: diag
   numeric_imputer_strategy: mean
   random_state: ${data_params.random_state}
+  scaler_type: standard
+  encoder_type: ohe
 
 training_params:
   model_type: LogisticRegression

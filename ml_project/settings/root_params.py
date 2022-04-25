@@ -7,6 +7,7 @@ from .training_params import EstimatorConfig
 
 @dataclass
 class RootConfig:
+    dir_prefix: str
     data_params: DatasetConfig
     feature_params: FeaturesConfig
     training_params: EstimatorConfig

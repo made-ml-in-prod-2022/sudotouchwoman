@@ -19,4 +19,5 @@ FEATURES = chain(
     map(lambda x: f"{x}_worst", FEATURE_TYPES),
 )
 
+FEATURES = tuple(FEATURES)
 DEFAULT_COLUMN_NAMES = ["id", "diag", *FEATURES]
