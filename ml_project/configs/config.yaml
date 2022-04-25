@@ -1,6 +1,7 @@
 defaults:
   - _self_
   - estimator: log-reg
+  - feature: no-pca
   - override hydra/job_logging: dot-formatted
 
 dir_prefix: ../../..
@@ -16,10 +17,3 @@ dataset:
 splitter:
   validation: 0.2
   random_state: ${dataset.random_state}
-
-feature:
-  target: diag
-  numeric_imputer_strategy: mean
-  random_state: ${dataset.random_state}
-  scaler_type: standard
-  encoder_type: ohe

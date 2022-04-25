@@ -43,8 +43,6 @@ def numeric_features_transform(
         log.error(msg=error_message)
         raise ValueError(error_message)
 
-    # log.debug(msg=f"Creates pipeline for numeric features using\
-    #     PCA-{principal_components} and {pca_kernel} kernel")
     log.debug(msg="Adding scaler to numeric pipeline")
     selected_scaler = scalers[scaler_type]
     # data = selected_scaler.fit_transform(data)

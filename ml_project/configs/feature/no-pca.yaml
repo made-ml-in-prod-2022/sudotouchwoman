@@ -1,0 +1,5 @@
+target: diag
+numeric_imputer_strategy: mean
+random_state: ${dataset.random_state}
+scaler_type: standard
+encoder_type: ohe
