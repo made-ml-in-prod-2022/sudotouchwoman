@@ -1,4 +1,4 @@
-from typing import List, NoReturn
+from typing import List
 
 import logging
 import requests
@@ -52,7 +52,7 @@ def download_file(
 
 def create_dataset(
     source_url: str, target_dir: str, dataset_name: str
-) -> NoReturn:
+) -> None:
     if not isdir(target_dir):
         mkdir(target_dir)
         log.info(msg=f"Created dir for raw data: {target_dir}")
@@ -66,6 +66,7 @@ def read_dataset(
     column_names: List[str] or None,
     header: int or None,
 ) -> pd.DataFrame:
+    log.debug(msg=f"Trying to open dataset at {dataset_path}")
     if not isfile(dataset_path):
         log.error(msg=f"Dataset File not found: {dataset_path}")
         raise FileNotFoundError()

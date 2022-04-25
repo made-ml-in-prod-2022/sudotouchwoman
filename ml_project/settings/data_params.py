@@ -9,7 +9,9 @@ class DatasetConfig:
     dataset_dir: str
     dataset_filename: str
     download: bool = field(default=False)
-    column_names: List[str] = DEFAULT_COLUMN_NAMES
+    column_names: List[str] = field(
+        default_factory=lambda: DEFAULT_COLUMN_NAMES
+    )
     header: int = field(default=None)
     random_state: int = field(default=42)
 

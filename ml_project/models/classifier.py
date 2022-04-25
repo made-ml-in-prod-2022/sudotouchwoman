@@ -1,5 +1,5 @@
 import pickle
-from typing import NoReturn, Union, Dict, Any
+from typing import Union, Dict, Any
 import logging
 from os import getenv
 from dataclasses import dataclass
@@ -19,7 +19,7 @@ from sklearn.metrics import (
     recall_score,
     f1_score,
 )
-# from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.pipeline import Pipeline, make_pipeline
 
 
 def _make_logger(name: str) -> logging.Logger:
@@ -116,15 +116,26 @@ def get_metrics(
     return Report(**metrics)
 
 
-def dump_model(model: Estimator, dump_to: str) -> NoReturn:
+def dump_pipeline(pipeline: Pipeline, dump_to: str) -> None:
     log.debug(msg=f"Serializing model to {dump_to}")
 
     try:
         with open(dump_to, "wb+") as f:
-            pickle.dump(model, f)
+            pickle.dump(pipeline, f)
     except (FileNotFoundError, pickle.PicklingError) as e:
         log.error(msg="Failed to serialize model")
         log.error(exc_info=e)
         raise e
 
     log.debug(msg="Dump complete")
+
+
+def build_inference_pipeline(
+    preprocessor: Pipeline,
+    estimator: Estimator
+) -> Pipeline:
+    # essentially clays together
+    # the preprocessing pipeline
+    # and the actual classifier
+    # to be dumped as an artifact
+    return make_pipeline(preprocessor, estimator)

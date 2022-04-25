@@ -1,27 +1,27 @@
-model_artifact_path: "artifacts/"
-metrics_path: "metrics/"
+model_artifact_path: ../../../artifacts/
+metrics_path: ../../../metrics/
 
 data_params:
   download: True
-  source_url: "https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data"
-  dataset_dir: "data/raw"
-  dataset_filename: "breast-cancer-dataset.csv"
+  source_url: https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data
+  dataset_dir: ../../../data/raw
+  dataset_filename: breast-cancer-dataset.csv
   random_state: 100
 
 split_params:
   validation: 0.2
-  random_state: $"data_params.random_state"
+  random_state: ${data_params.random_state}
 
 feature_params:
-  target: "diag"
-  numeric_imputer_strategy: "mean"
-  random_state: $"data_params.random_state"
+  target: diag
+  numeric_imputer_strategy: mean
+  random_state: ${data_params.random_state}
 
 training_params:
-  model_type: "LogisticRegression"
+  model_type: LogisticRegression
   model_params:
     max_iters: 1500
-    penalty: "elasticnet"
+    penalty: elasticnet
     l1_ratio: 0.8
-    random_state: $"data_params.random_state"
-    solver: "saga"
+    random_state: ${data_params.random_state}
+    solver: saga
