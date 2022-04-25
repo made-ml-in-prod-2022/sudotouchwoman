@@ -1,32 +1,13 @@
-from typing import List
-
+from os import mkdir
+from os.path import isfile, isdir
 import logging
 import requests
-from os import getenv, mkdir
-from os.path import isfile, isdir
 
 import pandas as pd
 
+from settings.data_params import DatasetConfig
 
-def _make_logger(name: str) -> logging.Logger:
-
-    log = logging.getLogger(name)
-
-    if not log.hasHandlers():
-        DEBUGLEVEL = getenv("DEBUG_LEVEL", "DEBUG")
-        log.disabled = getenv("WRITE_LOGS", "True") == "False"
-
-        log.setLevel(getattr(logging, DEBUGLEVEL))
-
-        logging.basicConfig(
-            format="[%(asctime)s]::[%(name)s]::[%(levelname)s]::%(message)s",
-            datefmt="%D # %H:%M:%S",
-        )
-
-    return log
-
-
-log = _make_logger(__name__)
+log = logging.getLogger(__name__)
 
 
 def download_file(
@@ -50,32 +31,30 @@ def download_file(
     return local_filename
 
 
-def create_dataset(
-    source_url: str, target_dir: str, dataset_name: str
-) -> None:
-    if not isdir(target_dir):
-        mkdir(target_dir)
-        log.info(msg=f"Created dir for raw data: {target_dir}")
+def create_dataset(params: DatasetConfig) -> None:
+    if not isdir(params.dataset_dir):
+        mkdir(params.dataset_dir)
+        log.info(msg=f"Created dir for raw data: {params.dataset_dir}")
 
-    dataset_filename = f"{target_dir}/{dataset_name}"
-    download_file(source_url, dataset_filename, overwrite=False)
+    dataset_filename = f"{params.dataset_dir}/{params.dataset_filename}"
+    download_file(params.source_url, dataset_filename, overwrite=False)
 
 
-def read_dataset(
-    dataset_path: str,
-    column_names: List[str] or None,
-    header: int or None,
-) -> pd.DataFrame:
+def read_dataset(params: DatasetConfig) -> pd.DataFrame:
+    dataset_path = f"{params.dataset_dir}/{params.dataset_filename}"
     log.debug(msg=f"Trying to open dataset at {dataset_path}")
+
     if not isfile(dataset_path):
         log.error(msg=f"Dataset File not found: {dataset_path}")
         raise FileNotFoundError()
 
-    if column_names is None and header is None:
+    if params.column_names is None and params.header is None:
         log.error(
             msg="Either set of column names or a header row should be provided"
         )
         raise TypeError("Column names not provided")
 
     log.debug(msg=f"Reading dataset from {dataset_path}")
-    return pd.read_csv(dataset_path, header=header, names=column_names)
+    return pd.read_csv(
+        dataset_path, header=params.header, names=params.column_names
+    )

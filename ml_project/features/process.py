@@ -1,6 +1,5 @@
-import logging
-from os import getenv
 from typing import List
+import logging
 
 from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.preprocessing import StandardScaler, RobustScaler
@@ -12,30 +11,12 @@ from sklearn.compose import ColumnTransformer, make_column_transformer
 
 __all__ = [
     "numeric_features_transform",
-    "categorial_features_transform",
+    "categorical_features_transform",
     "preprocessing_pipeline",
 ]
 
 
-def _make_logger(name: str) -> logging.Logger:
-
-    log = logging.getLogger(name)
-
-    if not log.hasHandlers():
-        DEBUGLEVEL = getenv("DEBUG_LEVEL", "DEBUG")
-        log.disabled = getenv("WRITE_LOGS", "True") == "False"
-
-        log.setLevel(getattr(logging, DEBUGLEVEL))
-
-        logging.basicConfig(
-            format="[%(asctime)s]::[%(name)s]::[%(levelname)s]::%(message)s",
-            datefmt="%D # %H:%M:%S",
-        )
-
-    return log
-
-
-log = _make_logger(__name__)
+log = logging.getLogger(__name__)
 
 
 def numeric_features_transform(
@@ -77,7 +58,7 @@ def numeric_features_transform(
     return make_pipeline(*steps)
 
 
-def categorial_features_transform(encoder_type: str) -> Pipeline:
+def categorical_features_transform(encoder_type: str) -> Pipeline:
     """
     Creates pipeline for categorical features:
     essentially encodes them using

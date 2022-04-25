@@ -1,17 +1,17 @@
-import pickle
-from typing import Union, Dict, Any
-import logging
-from os import getenv
+from typing import Union
 from dataclasses import dataclass
+import logging
+import pickle
 
 import numpy as np
 import pandas as pd
 
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.pipeline import Pipeline, make_pipeline
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import (
     GradientBoostingClassifier,
     HistGradientBoostingClassifier,
+    RandomForestClassifier,
 )
 from sklearn.metrics import (
     precision_score,
@@ -19,28 +19,11 @@ from sklearn.metrics import (
     recall_score,
     f1_score,
 )
-from sklearn.pipeline import Pipeline, make_pipeline
+
+from settings.training_params import EstimatorConfig
 
 
-def _make_logger(name: str) -> logging.Logger:
-
-    log = logging.getLogger(name)
-
-    if not log.hasHandlers():
-        DEBUGLEVEL = getenv("DEBUG_LEVEL", "DEBUG")
-        log.disabled = getenv("WRITE_LOGS", "True") == "False"
-
-        log.setLevel(getattr(logging, DEBUGLEVEL))
-
-        logging.basicConfig(
-            format="[%(asctime)s]::[%(name)s]::[%(levelname)s]::%(message)s",
-            datefmt="%D # %H:%M:%S",
-        )
-
-    return log
-
-
-log = _make_logger(__name__)
+log = logging.getLogger(__name__)
 
 Estimator = Union[
     LogisticRegression,
@@ -58,11 +41,7 @@ IMPLEMENTED_MODELS = dict(
 
 
 def make_estimator(
-    features: pd.DataFrame,
-    target: pd.Series,
-    random_state: int,
-    model_type: str,
-    model_kwds: Dict[str, Any]
+    features: pd.DataFrame, target: pd.Series, params: EstimatorConfig
 ) -> Estimator:
     """
     Instantiates estimator class and fits it
@@ -78,16 +57,16 @@ def make_estimator(
     :rtype Estimator, model instance
     """
     log.debug(msg="Creating estimator")
-    if model_type not in IMPLEMENTED_MODELS.keys():
-        error_message = f"Invalid model type: {model_type}"
+    if params.model_type not in IMPLEMENTED_MODELS.keys():
+        error_message = f"Invalid model type: {params.model_type}"
         log.error(msg=error_message)
         raise ValueError(error_message)
     try:
-        model = IMPLEMENTED_MODELS[model_type]
-        model = model(**model_kwds, random_state=random_state)
+        model = IMPLEMENTED_MODELS[params.model_type]
+        model = model(**params.model_params)
     except (ValueError, TypeError) as e:
         log.error(msg="Invalid model args")
-        log.error(exc_info=e)
+        log.error(msg=f"{e}")
         raise e
     log.debug(msg=f"Fitting {type(model)}")
     model.fit(features, target)
@@ -105,13 +84,18 @@ class Report:
 
 def get_metrics(
     true_target: pd.Series or np.ndarray,
-    prediction: np.ndarray
+    prediction: np.ndarray,
+    params: EstimatorConfig,
 ) -> Report:
+    pos_label = params.pos_label
+
     metrics = {
         "accuracy": accuracy_score(true_target, prediction),
-        "recall": recall_score(true_target, prediction),
-        "precision": precision_score(true_target, prediction),
-        "f1": f1_score(true_target, prediction)
+        "recall": recall_score(true_target, prediction, pos_label=pos_label),
+        "precision": precision_score(
+            true_target, prediction, pos_label=pos_label
+        ),
+        "f1": f1_score(true_target, prediction, pos_label=pos_label),
     }
     return Report(**metrics)
 
@@ -124,15 +108,14 @@ def dump_pipeline(pipeline: Pipeline, dump_to: str) -> None:
             pickle.dump(pipeline, f)
     except (FileNotFoundError, pickle.PicklingError) as e:
         log.error(msg="Failed to serialize model")
-        log.error(exc_info=e)
+        log.error(msg=f"{e}")
         raise e
 
     log.debug(msg="Dump complete")
 
 
-def build_inference_pipeline(
-    preprocessor: Pipeline,
-    estimator: Estimator
+def make_inference_pipeline(
+    preprocessor: Pipeline, estimator: Estimator
 ) -> Pipeline:
     # essentially clays together
     # the preprocessing pipeline

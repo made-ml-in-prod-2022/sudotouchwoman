@@ -12,8 +12,6 @@ class FeaturesConfig:
     encoder_type: str = field(default="OneHotEncoder")
     features_to_drop: List[str] = field(default_factory=lambda: [])
     categorical_features: List[str] = field(default_factory=lambda: [])
-    numeric_features: List[str] = field(
-        default_factory=lambda: list(FEATURES)
-    )
+    numeric_features: List[str] = field(default_factory=lambda: list(FEATURES))
     numeric_imputer_strategy: str = field(default="mean")
     random_state: int = field(default=42)
