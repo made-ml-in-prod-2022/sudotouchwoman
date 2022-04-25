@@ -9,4 +9,4 @@ model_params:
   max_features: sqrt
   bootstrap: True
   criterion: gini
-  random_state: ${dataset.random_state}
+  random_state: ${random_state}

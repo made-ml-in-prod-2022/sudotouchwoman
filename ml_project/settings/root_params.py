@@ -13,6 +13,7 @@ class RootConfig:
     estimator: EstimatorConfig
     splitter: SplitConfig
     metrics_path: str
+    random_state: int
 
 
 def resolve_cfg(cfg: RootConfig) -> None:

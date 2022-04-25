@@ -48,7 +48,7 @@ def main(cfg: OmegaConf):
     create_dataset(data_cfg)
     raw_data = read_dataset(data_cfg)
     log.debug(msg=f"Loaded dataset: {raw_data.shape}")
-    log.debug(msg=f"Dataset columns: {raw_data.columns}")
+    log.debug(msg=f"Dataset columns: {raw_data.columns.to_list()}")
 
     feature_columns = (
         feature_cfg.numeric_features + feature_cfg.categorical_features
@@ -103,6 +103,7 @@ def main(cfg: OmegaConf):
 
     log.info(msg=f"Dumps artifact to {train_cfg.model_artifact_path}")
     dump_pipeline(end_to_end_pipeline, train_cfg.model_artifact_path)
+
     log.info(msg="Training pipeline finished")
 
 
