@@ -7,7 +7,14 @@ from sklearn.compose import make_column_transformer, ColumnTransformer
 from sklearn.impute import SimpleImputer
 
 
-def make_logger(name: str) -> logging.Logger:
+__all__ = [
+    "extract_target",
+    "extract_feature_columns",
+    "make_imputer"
+]
+
+
+def _make_logger(name: str) -> logging.Logger:
 
     log = logging.getLogger(name)
 
@@ -25,7 +32,7 @@ def make_logger(name: str) -> logging.Logger:
     return log
 
 
-log = make_logger(__name__)
+log = _make_logger(__name__)
 
 
 def extract_target(data: pd.DataFrame, target_column: str) -> pd.Series:

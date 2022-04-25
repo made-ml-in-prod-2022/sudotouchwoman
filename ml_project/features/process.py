@@ -9,7 +9,13 @@ from sklearn.decomposition import KernelPCA
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 
 
-def make_logger(name: str) -> logging.Logger:
+__all__ = [
+    "numeric_features_transform",
+    "categorial_features_transform",
+]
+
+
+def _make_logger(name: str) -> logging.Logger:
 
     log = logging.getLogger(name)
 
@@ -27,7 +33,7 @@ def make_logger(name: str) -> logging.Logger:
     return log
 
 
-log = make_logger(__name__)
+log = _make_logger(__name__)
 
 
 def numeric_features_transform(
@@ -68,7 +74,7 @@ def numeric_features_transform(
     return make_pipeline(*steps)
 
 
-def categorical_features_transform(
+def categorial_features_transform(
     data: pd.DataFrame, encoder_type: str
 ) -> Pipeline:
     """

@@ -8,7 +8,7 @@ from os.path import isfile, isdir
 import pandas as pd
 
 
-def make_logger(name: str) -> logging.Logger:
+def _make_logger(name: str) -> logging.Logger:
 
     log = logging.getLogger(name)
 
@@ -26,7 +26,7 @@ def make_logger(name: str) -> logging.Logger:
     return log
 
 
-log = make_logger(__name__)
+log = _make_logger(__name__)
 
 
 def download_file(

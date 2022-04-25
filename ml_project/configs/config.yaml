@@ -2,6 +2,7 @@ model_artifact_path: "artifacts/"
 metrics_path: "metrics/"
 
 data_params:
+  download: True
   source_url: "https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data"
   dataset_dir: "data/raw"
   dataset_filename: "breast-cancer-dataset.csv"
