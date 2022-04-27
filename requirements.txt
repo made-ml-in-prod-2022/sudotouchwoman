@@ -6,5 +6,6 @@ plotly
 scikit-learn
 requests
 hydra
+hydra-core
 omegaconf
 pytest
