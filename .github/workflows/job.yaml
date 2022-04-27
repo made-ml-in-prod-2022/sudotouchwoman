@@ -2,7 +2,7 @@ name: Training Pipeline
 
 on:
   push:
-    branches: [ workflow-hotfix ]
+    branches: [ homework1 ]
 
   workflow_dispatch:
 
