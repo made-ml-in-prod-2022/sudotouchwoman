@@ -11,7 +11,7 @@ After this, `outputs/` dir should be automatically created by hydra to manage ru
 
 __Note__: due to relative pathing, the paths convention is `../../../desired-dir-name`.
 
-__Upd__: now `${dir_prefix}` variable can be used to manage relativa pathing in configs.
+__Upd__: now `${dir_prefix}` variable can be used to manage pathing in configs.
 
 ## __Configure the pipeline!__
 With hydra it is really simple and straightforward, just specify the required configuration
@@ -19,3 +19,15 @@ throgh the CLI like `estimator=random-forest` or `++random_state=42` (use `++` t
 
 ## __Logging__
 Loggers are used in most modules and the logfile can be found in hydra's `outputs/` directory as `pipeline.log`.
+
+## __Unit-testing__
+`Pytest` framework is used for testing, modular tests can be found at `testing/` directory. I tried to advance
+my knowledge of pytest by using `mark.skipif` semantics in order to manage offline runs for data fetching.
+Also, I found out that `pytest` has its own `setup` and `teardown` methods. Those were used in order to
+create a temporary directory to write/read data during testing. The directory is cleaned up after each run.
+
+In order to run all unit-tests, run the following command (see the example below):
+
+`>>> python -m pytest`
+
+![running network-sensitive tests](./screenshots/network-testing.jpg)
