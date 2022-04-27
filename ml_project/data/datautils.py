@@ -56,6 +56,8 @@ def create_dataset(params: DatasetConfig) -> None:
         log.info(msg=f"Created dir for raw data: {params.dataset_dir}")
 
     dataset_filename = f"{params.dataset_dir}/{params.dataset_filename}"
+    if not params.download:
+        return
     download_file(params.source_url, dataset_filename, overwrite=False)
 
 
