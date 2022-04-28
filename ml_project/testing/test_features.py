@@ -6,6 +6,7 @@ from pytest_mock import MockerFixture
 
 import numpy as np
 import pandas as pd
+from sklearn.pipeline import Pipeline
 
 from features.extract import (
     extract_feature_columns,
@@ -14,11 +15,13 @@ from features.extract import (
     SplitConfig,
 )
 
-# from features.process import (
-#     numeric_features_transform,
-#     categorical_features_transform,
-#     preprocessing_pipeline
-# )
+from features.process import (
+    numeric_features_transform,
+    # categorical_features_transform,
+    # preprocessing_pipeline,
+)
+
+from settings.features_params import FeaturesConfig
 
 
 @pytest.fixture
@@ -156,3 +159,51 @@ def test_split_data(
     # classes are either equally balanced or 1 item is odd somewhere
     diff = np.count_nonzero(train_y) - np.count_nonzero(val_y)
     assert diff in (-1, 0, 1)
+
+
+@pytest.fixture
+def features_conf(
+    num_columns: List[str], cat_columns: List[str], target_column: str
+) -> FeaturesConfig:
+    # config with most default values to test
+    # transforms
+    return FeaturesConfig(
+        target=target_column,
+        categorical_features=cat_columns,
+        numeric_features=num_columns,
+    )
+
+
+@pytest.fixture
+def numeric_data() -> np.ndarray:
+    # some data to test numeric transform
+    rng = np.random.default_rng()
+    return rng.uniform(size=(10, 50))
+
+
+def test_numeric_features_transform(
+    numeric_data: np.ndarray,
+    features_conf: FeaturesConfig,
+    mocker: MockerFixture,
+):
+    # spy logger calls
+    mock_logger = mocker.stub()
+    mocker.patch("features.process.log.error", mock_logger)
+
+    # this call with default settings is fine
+    num_transformer = numeric_features_transform(features_conf.scaler_type)
+    assert isinstance(num_transformer, Pipeline)
+    mock_logger.assert_not_called()
+
+    # without PCA, output shape should match input shape
+    transformed = num_transformer.fit_transform(numeric_data)
+    assert isinstance(transformed, np.ndarray)
+    assert numeric_data.shape == transformed.shape
+
+    # attempt to pass invalid scaler type
+    with pytest.raises(ValueError) as exc_info:
+        numeric_features_transform("non-existing-scaler")
+
+    exception_raised = exc_info.value
+    assert isinstance(exception_raised, ValueError)
+    mock_logger.assert_called_once()

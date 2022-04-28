@@ -8,8 +8,8 @@ class FeaturesConfig:
     target: str
     PCA_components: Optional[int] = None
     PCA_kernel: Optional[str] = field(default="linear")
-    scaler_type: str = field(default="StandardScaler")
-    encoder_type: str = field(default="OneHotEncoder")
+    scaler_type: str = field(default="standard")
+    encoder_type: str = field(default="ohe")
     features_to_drop: List[str] = field(default_factory=lambda: [])
     categorical_features: List[str] = field(default_factory=lambda: [])
     numeric_features: List[str] = field(default_factory=lambda: list(FEATURES))
