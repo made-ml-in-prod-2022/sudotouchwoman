@@ -9,3 +9,4 @@ hydra
 hydra-core
 omegaconf
 pytest
+pytest-mock

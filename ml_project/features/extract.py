@@ -18,7 +18,7 @@ def extract_target(data: pd.DataFrame, target_column: str) -> pd.Series:
     )
     try:
         target = data[target_column]
-    except ValueError as e:
+    except KeyError as e:
         log.error(msg=f"Column must be missing: {target_column}")
         raise e
     return target
@@ -30,7 +30,7 @@ def extract_feature_columns(
     log.debug(msg=f"Extracting features from pandas table: {feature_columns}")
     try:
         features = data[feature_columns]
-    except ValueError as e:
+    except KeyError as e:
         log.error(msg=f"Some columns must be missing: {feature_columns}")
         raise e
     return features
