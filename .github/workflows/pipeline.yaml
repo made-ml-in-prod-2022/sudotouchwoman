@@ -1,6 +1,16 @@
 name: Run Training Pipeline
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Logging level'
+        required: true
+        default: 'INFO'
+        type: choice
+        options:
+          - INFO
+          - DEBUG
 
 jobs:
   # this workflow contains
@@ -28,7 +38,7 @@ jobs:
       - name: Run the training pipeline
         working-directory: ./ml_project
         run: |
-          python pipeline.py hydra/job_logging=console-dot-formatted | tee pipeline.log
+          python pipeline.py hydra.job_logging.root.handlers=[console,file] hydra.job_logging.root.level=${{ github.event.inputs.logLevel }}
       - name: Find out where the artifacts and logfiles are
         run: |
           apt install tree
@@ -42,4 +52,5 @@ jobs:
           path: |
             ml_project/pipeline.log
             ml_project/artifacts/
+            ml_project/outputs/
         if: ${{ always() }}
