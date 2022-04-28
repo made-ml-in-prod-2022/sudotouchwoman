@@ -1,17 +1,11 @@
-name: Training Pipeline
+name: Run linting and unit-tests
 
-on:
-  push:
-    branches: [ homework1 ]
-
-  workflow_dispatch:
+on: push
 
 jobs:
   # this workflow contains
   # python setup, dependency installation,
   # linting and unit-testing with pytest
-  # as a last step, training pipeline is run
-  # and the artifacts are also saved
   build:
 
     runs-on: ubuntu-latest
@@ -40,19 +34,6 @@ jobs:
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-      - name: Test with pytest and save the log
+      - name: Test with pytest
         run: |
-          python -m pytest -v | tee pytest-results.log
-
-      - name: Run the training pipeline
-        run: |
-          python pipeline.py hydra/job_logging=console-dot-formatted | tee pipeline.log
-
-      - name: Save the artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: artifacts
-          path: |
-            ./*.log
-            artifacts/*.pkl
-        if: ${{ always() }}
+          python -m pytest -v
