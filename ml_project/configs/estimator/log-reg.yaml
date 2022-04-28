@@ -1,4 +1,5 @@
 model_artifact_path: ${dir_prefix}/artifacts/log-reg.pkl
+metrics_path: ${dir_prefix}/metrics/log-reg.json
 
 model_type: LogReg
 pos_label: M

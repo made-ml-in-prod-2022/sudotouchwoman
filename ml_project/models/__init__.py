@@ -1,6 +1,9 @@
 from .classifier import (
     make_estimator,
     make_inference_pipeline,
+)
+
+from .utils import (
     get_metrics,
     dump_pipeline,
 )

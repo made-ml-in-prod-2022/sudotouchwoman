@@ -5,7 +5,6 @@ defaults:
   - override hydra/job_logging: dot-formatted
 
 dir_prefix: ../../..
-metrics_path: ${dir_prefix}/metrics/
 random_state: 100
 
 dataset:

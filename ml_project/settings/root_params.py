@@ -12,7 +12,6 @@ class RootConfig:
     feature: FeaturesConfig
     estimator: EstimatorConfig
     splitter: SplitConfig
-    metrics_path: str
     random_state: int
 
 

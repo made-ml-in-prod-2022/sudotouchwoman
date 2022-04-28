@@ -47,7 +47,7 @@ def main(cfg: OmegaConf):
 
     create_dataset(data_cfg)
     raw_data = read_dataset(data_cfg)
-    log.debug(msg=f"Loaded dataset: {raw_data.shape}")
+    log.info(msg=f"Loaded dataset: {raw_data.shape}")
     log.debug(msg=f"Dataset columns: {raw_data.columns.to_list()}")
 
     feature_columns = (
@@ -56,8 +56,6 @@ def main(cfg: OmegaConf):
 
     target = extract_target(raw_data, feature_cfg.target)
     features = extract_feature_columns(raw_data, feature_columns)
-    log.debug(msg=f"Feature columns: {feature_columns}")
-    log.debug(msg=f"Target column: {target.shape}")
 
     log.info(msg="Splitting the dataset")
     train_features, val_features, train_y, val_y = split_data(
@@ -86,7 +84,6 @@ def main(cfg: OmegaConf):
     log.debug(msg=f"\n{preprocessor}")
 
     train_features_processed = preprocessor.fit_transform(train_features)
-    log.debug(msg=f"Processed: {train_features_processed.shape}")
 
     end_to_end_pipeline = make_inference_pipeline(
         preprocessor,
@@ -99,7 +96,8 @@ def main(cfg: OmegaConf):
         end_to_end_pipeline.predict(val_features),
         train_cfg
     )
-    log.info(msg=f"{metrics}")
+    log.info(msg=f"Collected metrics: {metrics}")
+    metrics.dump(train_cfg.metrics_path)
 
     log.info(msg=f"Dumps artifact to {train_cfg.model_artifact_path}")
     dump_pipeline(end_to_end_pipeline, train_cfg.model_artifact_path)

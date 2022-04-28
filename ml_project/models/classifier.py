@@ -1,9 +1,6 @@
 from typing import Union
-from dataclasses import dataclass
 import logging
-import pickle
 
-import numpy as np
 import pandas as pd
 
 from sklearn.pipeline import Pipeline, make_pipeline
@@ -12,12 +9,6 @@ from sklearn.ensemble import (
     GradientBoostingClassifier,
     HistGradientBoostingClassifier,
     RandomForestClassifier,
-)
-from sklearn.metrics import (
-    precision_score,
-    accuracy_score,
-    recall_score,
-    f1_score,
 )
 
 from settings.training_params import EstimatorConfig
@@ -72,47 +63,6 @@ def make_estimator(
     model.fit(features, target)
     log.debug(msg="Fitting complete")
     return model
-
-
-@dataclass
-class Report:
-    accuracy: float
-    recall: float
-    precision: float
-    f1: float
-
-
-def get_metrics(
-    true_target: pd.Series or np.ndarray,
-    prediction: np.ndarray,
-    params: EstimatorConfig,
-) -> Report:
-    # required as the model is trained on probably non-numeric labels
-    pos_label = params.pos_label
-
-    metrics = {
-        "accuracy": accuracy_score(true_target, prediction),
-        "recall": recall_score(true_target, prediction, pos_label=pos_label),
-        "precision": precision_score(
-            true_target, prediction, pos_label=pos_label
-        ),
-        "f1": f1_score(true_target, prediction, pos_label=pos_label),
-    }
-    return Report(**metrics)
-
-
-def dump_pipeline(pipeline: Pipeline, dump_to: str) -> None:
-    log.debug(msg=f"Serializing model to {dump_to}")
-
-    try:
-        with open(dump_to, "wb+") as f:
-            pickle.dump(pipeline, f)
-    except (FileNotFoundError, pickle.PicklingError) as e:
-        log.error(msg="Failed to serialize model")
-        log.error(msg=f"{e}")
-        raise e
-
-    log.debug(msg="Dump complete")
 
 
 def make_inference_pipeline(
