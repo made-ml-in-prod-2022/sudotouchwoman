@@ -64,3 +64,17 @@ def dump_pipeline(pipeline: Pipeline, dump_to: str) -> None:
         raise e
 
     log.debug(msg="Dump complete")
+
+
+def load_pipeline(load_from: str) -> Pipeline:
+    log.debug(msg=f"Loading model from {load_from}")
+
+    try:
+        with open(load_from, "rb") as f:
+            model = pickle.load(f)
+            log.debug(msg="Successfully loaded model")
+            return model
+    except (FileNotFoundError, pickle.UnpicklingError) as e:
+        log.error(msg="Failed to deserialize model")
+        log.error(msg=f"{e}")
+        raise e

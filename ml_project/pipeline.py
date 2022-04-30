@@ -28,7 +28,7 @@ from models import (
 log = logging.getLogger(__name__)
 
 
-@hydra.main(config_path="./configs", config_name="config")
+@hydra.main(config_path="./configs", config_name="training")
 def main(cfg: OmegaConf):
     log.info(msg="Training pipeline starting")
     log.debug(msg=f"Original working dir: {hydra.utils.get_original_cwd()}")

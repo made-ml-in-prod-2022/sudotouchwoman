@@ -1,0 +1,8 @@
+defaults:
+  - _self_
+  - override hydra/job_logging: dot-formatted
+
+model_artifact: ???
+input: ???
+dir_prefix: ../../..
+features_path: ${dir_prefix}/${input}

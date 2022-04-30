@@ -6,6 +6,7 @@ from .classifier import (
 from .utils import (
     get_metrics,
     dump_pipeline,
+    load_pipeline
 )
 
 __all__ = [
@@ -13,4 +14,5 @@ __all__ = [
     "make_inference_pipeline",
     "get_metrics",
     "dump_pipeline",
+    "load_pipeline"
 ]
