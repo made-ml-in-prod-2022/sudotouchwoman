@@ -1,0 +1,56 @@
+name: Run Training Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Logging level'
+        required: true
+        default: 'INFO'
+        type: choice
+        options:
+          - INFO
+          - DEBUG
+
+jobs:
+  # this workflow contains
+  # python setup, dependency installation,
+  # and training pipeline run
+  # the artifacts are also saved
+  train:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.8'
+          architecture: 'x64'
+          cache: 'pip'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 pytest
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run the training pipeline
+        working-directory: ./ml_project
+        run: |
+          python pipeline.py hydra.job_logging.root.handlers=[console,file] hydra.job_logging.root.level=${{ github.event.inputs.logLevel }}
+      - name: Find out where the artifacts and logfiles are
+        run: |
+          apt install tree
+          tree -I *cache*
+
+      - name: Save the artifacts
+        working-directory: .
+        uses: actions/upload-artifact@v3
+        with:
+          name: training-artifacts
+          path: |
+            ml_project/pipeline.log
+            ml_project/artifacts/
+            ml_project/outputs/
+        if: ${{ always() }}
