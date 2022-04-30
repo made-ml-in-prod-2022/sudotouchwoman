@@ -60,7 +60,7 @@ jobs:
         with:
           name: training-artifacts
           path: |
-            ml_project/pipeline.log
-            ml_project/artifacts/
+            ml_project/artifacts/*.pkl
+            ml_project/metrics/*.json
             ml_project/outputs/
         if: ${{ always() }}

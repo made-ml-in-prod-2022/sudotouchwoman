@@ -79,3 +79,18 @@ def read_dataset(params: DatasetConfig) -> pd.DataFrame:
     return pd.read_csv(
         dataset_path, header=params.header, names=params.column_names
     )
+
+
+def read_inference_data(path: str) -> pd.DataFrame:
+    log.debug(msg=f"Reading inference data from {path}")
+    try:
+        data = pd.read_csv(path)
+    except FileNotFoundError as e:
+        log.error(msg="File missing")
+        raise e
+    except Exception as e:
+        log.error(msg=f"Failed to read the data: {e}")
+        raise e
+
+    log.debug(msg="Data loaded")
+    return data

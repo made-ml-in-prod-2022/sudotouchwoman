@@ -78,3 +78,10 @@ def load_pipeline(load_from: str) -> Pipeline:
         log.error(msg="Failed to deserialize model")
         log.error(msg=f"{e}")
         raise e
+
+
+def dump_prediction(prediction: np.ndarray, path: str) -> None:
+    log.debug(msg=f"Writing predictions to {path}")
+    with open(path, "w+") as f:
+        json.dump(prediction, f)
+    log.debug(msg="Predictions saved")

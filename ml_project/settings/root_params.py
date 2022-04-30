@@ -20,3 +20,10 @@ def resolve_cfg(cfg: RootConfig) -> None:
     cfg.feature = FeaturesConfig(**cfg.feature)
     cfg.estimator = EstimatorConfig(**cfg.estimator)
     cfg.splitter = SplitConfig(**cfg.splitter)
+
+
+@dataclass
+class InfConfig:
+    model_artifact: str
+    input_features: str
+    output_target: str
