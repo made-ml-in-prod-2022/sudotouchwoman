@@ -1,5 +1,22 @@
 # __Production-ready ML project example__
 
+## __Project structure__
+
+```
+└── ml_project
+    ├── artifacts           <- Model pickles
+    ├── configs             <- Configuration routines
+    ├── data                <- Data fetching/reading routines
+    ├── docs                <- Usage and examples
+    ├── features            <- Feature preprocessing
+    ├── metrics             <- Model performance dumps
+    ├── models              <- Routines to train and inference models
+    ├── notebooks           <- Jupyter notebooks
+    ├── settings            <- Config entitites
+    └── testing             <- Unit-tests
+```
+
+## __Project overview__
 `ml_project` directory contains the project with CLI application to manage data and feature processing, model creation and evaluation. The dataset used is Wisconsin Breast Cancer Dataset, [source](https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+(Diagnostic))
 
 The project structure is inspired (to reasonable extent) by [datascience-cookiecutter template](https://drivendata.github.io/cookiecutter-data-science/). Some sections are not present, like references or `sphinx` build.

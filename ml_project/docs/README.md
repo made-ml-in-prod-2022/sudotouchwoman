@@ -31,3 +31,9 @@ In order to run all unit-tests, run the following command (see the example below
 `>>> python -m pytest`
 
 ![running network-sensitive tests](./screenshots/network-testing.jpg)
+
+## __Evaluation__
+
+To evaluate the model pipeline in terminal, run the following command:
+
+```python evaluate.py model_artifact=artifacts/log-reg.pkl input=data/raw/breast-cancer-dataset.csv```
