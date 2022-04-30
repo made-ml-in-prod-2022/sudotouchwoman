@@ -45,7 +45,6 @@ jobs:
           tree -I *cache*
 
       - name: Save the artifacts
-        working-directory: .
         uses: actions/upload-artifact@v3
         with:
           name: training-artifacts
