@@ -39,10 +39,6 @@ jobs:
         working-directory: ./ml_project
         run: |
           python pipeline.py hydra.job_logging.root.handlers=[console,file] hydra.job_logging.root.level=${{ github.event.inputs.logLevel }}
-      - name: Find out where the artifacts and logfiles are
-        run: |
-          apt install tree
-          tree -I *cache*
 
       - name: Save the artifacts
         uses: actions/upload-artifact@v3
