@@ -16,6 +16,12 @@
     └── testing             <- Unit-tests
 ```
 
+## __Prerequisites__
+
+Project was tested under python `3.8.10`, but is likely to operate
+for newer language versions.
+Make sure to install the dependencies in `requirements.txt` via `pip install -r requirements.txt` command.
+
 ## __Project overview__
 `ml_project` directory contains the project with CLI application to manage data and feature processing, model creation and evaluation. The dataset used is Wisconsin Breast Cancer Dataset, [source](https://archive.ics.uci.edu/ml/datasets/Breast+Cancer+Wisconsin+(Diagnostic))
 
