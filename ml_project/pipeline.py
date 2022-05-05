@@ -2,9 +2,10 @@ import logging
 from os import getcwd
 
 import hydra
+from hydra.utils import instantiate
 from omegaconf import OmegaConf
 
-from settings.root_params import RootConfig, resolve_cfg
+from settings.root_params import RootConfig
 from data import read_dataset, create_dataset
 
 from features.extract import (
@@ -34,11 +35,7 @@ def main(cfg: OmegaConf):
     log.debug(msg=f"Original working dir: {hydra.utils.get_original_cwd()}")
     log.debug(msg=f"Actual CWD: {getcwd()}")
 
-    root_cfg = RootConfig(**OmegaConf.to_container(cfg, resolve=True))
-    # unpack nested dataclasses for dot-notation access,
-    # like root_cfg.data_params.source_url
-    # otherwise these would be dicts
-    resolve_cfg(root_cfg)
+    root_cfg: RootConfig = instantiate(cfg)
 
     dataset = root_cfg.dataset
     splitter = root_cfg.splitter

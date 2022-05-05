@@ -2,9 +2,9 @@ import logging
 from os import getcwd
 
 import hydra
+from hydra.utils import instantiate
 from omegaconf import OmegaConf
 
-from settings.root_params import InfConfig
 from models import load_pipeline, dump_prediction
 from data import read_inference_data
 
@@ -18,7 +18,7 @@ def main(cfg: OmegaConf) -> None:
     log.debug(msg=f"Original working dir: {hydra.utils.get_original_cwd()}")
     log.debug(msg=f"Actual CWD: {getcwd()}")
 
-    inf_config = InfConfig(**OmegaConf.to_object(cfg.inference))
+    inf_config = instantiate(cfg.inference)
     pipeline = load_pipeline(inf_config.artifact)
     log.info(msg=f"Loaded pipeline: {pipeline}")
 

@@ -7,11 +7,11 @@ from . import FEATURES
 class FeaturesConfig:
     target: str
     PCA_components: Optional[int] = None
-    PCA_kernel: Optional[str] = field(default="linear")
-    scaler_type: str = field(default="standard")
-    encoder_type: str = field(default="ohe")
+    PCA_kernel: Optional[str] = "linear"
+    scaler_type: str = "standard"
+    encoder_type: str = "ohe"
     features_to_drop: List[str] = field(default_factory=lambda: [])
     categorical_features: List[str] = field(default_factory=lambda: [])
     numeric_features: List[str] = field(default_factory=lambda: list(FEATURES))
-    numeric_imputer_strategy: str = field(default="mean")
-    random_state: int = field(default=42)
+    numeric_imputer_strategy: str = "mean"
+    random_state: int = 42

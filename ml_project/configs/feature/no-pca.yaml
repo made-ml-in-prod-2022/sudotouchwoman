@@ -1,3 +1,5 @@
+_target_: settings.features_params.FeaturesConfig
+
 target: diag
 numeric_imputer_strategy: mean
 random_state: ${random_state}

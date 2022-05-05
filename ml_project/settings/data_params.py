@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Union
+from typing import List, Optional
 from . import DEFAULT_COLUMN_NAMES
 
 
@@ -8,15 +8,15 @@ class DatasetConfig:
     source_url: str
     dataset_dir: str
     dataset_filename: str
-    download: bool = field(default=False)
+    download: bool = False
     column_names: List[str] = field(
         default_factory=lambda: DEFAULT_COLUMN_NAMES
     )
-    header: int = field(default=None)
-    random_state: int = field(default=42)
+    random_state: int = 42
+    header: Optional[int] = None
 
 
 @dataclass
 class SplitConfig:
-    validation: Union[int, float]
-    random_state: int = field(default=42)
+    validation: float
+    random_state: int = 42
