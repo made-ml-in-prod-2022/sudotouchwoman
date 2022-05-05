@@ -5,10 +5,8 @@ import hydra
 from omegaconf import OmegaConf
 
 from settings.root_params import InfConfig
-from models import load_pipeline
-
-# from models import load_pipeline, dump_prediction
-# from data import read_inference_data
+from models import load_pipeline, dump_prediction
+from data import read_inference_data
 
 
 log = logging.getLogger(__name__)
@@ -24,9 +22,9 @@ def main(cfg: OmegaConf) -> None:
     pipeline = load_pipeline(inf_config.model_artifact)
     log.info(msg=f"Loaded pipeline: {pipeline}")
 
-    # features = read_inference_data(inf_config.input_features)
-    # prediction = pipeline.predict(features)
-    # dump_prediction(prediction, inf_config.output_target)
+    features = read_inference_data(inf_config.input_features)
+    prediction = pipeline.predict(features)
+    dump_prediction(prediction, inf_config.output_target)
 
     log.info(msg="Inference pipeline finished")
 

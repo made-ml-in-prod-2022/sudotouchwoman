@@ -36,4 +36,9 @@ In order to run all unit-tests, run the following command (see the example below
 
 To evaluate the model pipeline in terminal, run the following command:
 
-```python evaluate.py model_artifact=artifacts/log-reg.pkl input=data/raw/breast-cancer-dataset.csv```
+```python evaluate.py model_artifact=*artifact-path* input=*inference-features-csv*```
+
+In this command, `model_artifact` arg should be a path to the pipeline pickle created by `pipeline.py`
+and `input` should be a valid path to inference features (stored in a `.csv` file).
+
+Note that these arguments are required, otherwise the application will abort.

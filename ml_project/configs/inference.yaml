@@ -4,10 +4,10 @@ defaults:
 
 model_artifact: ???
 input: ???
-output: metrics/prediction.json
+output: prediction.json
 dir_prefix: ../../..
 
 inference:
   model_artifact: ${dir_prefix}/${model_artifact}
   input_features: ${dir_prefix}/${input}
-  output_target:  ${dir_prefix}/${output}
+  output_target:  ${output}
