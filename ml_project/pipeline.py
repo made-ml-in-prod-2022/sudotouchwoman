@@ -13,11 +13,7 @@ from features.extract import (
     extract_feature_columns,
     split_data,
 )
-from features.process import (
-    numeric_features_transform,
-    categorical_features_transform,
-    preprocessing_pipeline,
-)
+from features.preprocessing import Preprocessor
 from models import (
     make_estimator,
     make_inference_pipeline,
@@ -61,21 +57,7 @@ def main(cfg: OmegaConf):
     log.debug(msg=f"Train set: {train_features.shape}: {train_y.shape}")
     log.debug(msg=f"Val set: {val_features.shape}: {val_y.shape}")
 
-    num_transformer = numeric_features_transform(
-        feature.scaler_type,
-        feature.PCA_components,
-        feature.PCA_kernel,
-    )
-
-    cat_transformer = categorical_features_transform(feature.encoder_type)
-
-    preprocessor = preprocessing_pipeline(
-        feature.categorical_features,
-        feature.numeric_features,
-        feature.numeric_imputer_strategy,
-        num_transformer=num_transformer,
-        cat_transformer=cat_transformer,
-    )
+    preprocessor = Preprocessor(feature)
 
     log.info(msg="Built preprocessor")
     log.debug(msg=f"\n{preprocessor}")
