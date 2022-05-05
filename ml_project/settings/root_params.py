@@ -24,6 +24,6 @@ def resolve_cfg(cfg: RootConfig) -> None:
 
 @dataclass
 class InfConfig:
-    model_artifact: str
+    artifact: str
     input_features: str
     output_target: str

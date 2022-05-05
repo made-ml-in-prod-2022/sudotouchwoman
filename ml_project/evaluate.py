@@ -19,7 +19,7 @@ def main(cfg: OmegaConf) -> None:
     log.debug(msg=f"Actual CWD: {getcwd()}")
 
     inf_config = InfConfig(**OmegaConf.to_object(cfg.inference))
-    pipeline = load_pipeline(inf_config.model_artifact)
+    pipeline = load_pipeline(inf_config.artifact)
     log.info(msg=f"Loaded pipeline: {pipeline}")
 
     features = read_inference_data(inf_config.input_features)

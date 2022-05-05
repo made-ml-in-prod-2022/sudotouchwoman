@@ -2,12 +2,12 @@ defaults:
   - _self_
   - override hydra/job_logging: dot-formatted
 
-model_artifact: ???
+artifact: ???
 input: ???
 output: prediction.json
 dir_prefix: ../../..
 
 inference:
-  model_artifact: ${dir_prefix}/${model_artifact}
+  artifact: ${dir_prefix}/${artifact}
   input_features: ${dir_prefix}/${input}
   output_target:  ${output}
