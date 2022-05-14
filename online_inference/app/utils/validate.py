@@ -38,20 +38,31 @@ def load_tabular_schema(
             log.error(msg="Encountered error during schema loading")
             log.error(msg=f"{e}")
             return
+    log.error(msg=f"Unknown source type: {type(source)}")
+    return
 
 
-def load_stats(
-    source: str, *, columns: List[str] = None
-) -> Optional[Tuple[np.ndarray, np.ndarray]]:
+def load_stats(source: str, /) -> Optional[Tuple[np.ndarray, np.ndarray]]:
     log.debug(msg=f"Reading statistical data from {source}")
-    log.debug(msg=f"Using {columns} columns") if columns else None
 
     try:
-        stats = pd.read_csv(source, names=columns)
-        log.debug(msg="Read CSV data")
-        return stats["mean"], stats["std"]
+        with open(source, "r") as f:
+            stats = json.load(f)
+        log.debug(msg="Read JSON data")
 
-    except ValueError as e:
+        if len(stats["mean"]) != len(stats["std"]):
+            log.error(msg="Make sure that the input is consistent")
+            raise ValueError
+
+        return np.array(stats["mean"]), np.array(stats["std"])
+
+    except (
+        json.JSONDecodeError,
+        FileNotFoundError,
+        KeyError,
+        ValueError,
+        TypeError
+    ) as e:
         log.error(msg="Encountered error during stats loading")
         log.error(msg=f"{e}")
         return

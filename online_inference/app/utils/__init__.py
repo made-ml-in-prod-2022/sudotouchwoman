@@ -1,3 +1,3 @@
-from .inference import load_artifact
+from .startup import on_startup
 
-__all__ = ["load_artifact"]
+__all__ = ["on_startup"]
