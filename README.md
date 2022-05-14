@@ -3,17 +3,25 @@
 ## __Project structure__
 
 ```
-└── ml_project
-    ├── artifacts           <- Model pickles
-    ├── configs             <- Configuration routines
-    ├── data                <- Data fetching/reading routines
-    ├── docs                <- Usage and examples
-    ├── features            <- Feature preprocessing
-    ├── metrics             <- Model performance dumps
-    ├── models              <- Routines to train and inference models
-    ├── notebooks           <- Jupyter notebooks
-    ├── settings            <- Config entitites
-    └── testing             <- Unit-tests
+├── ml_project          <- ML pipeline (train + batch inference)
+│   ├── configs         <- Configuration yaml files
+│   ├── data            <- Data storage (raw + synthetic)
+│   ├── docs            <- Usage and examples
+│   ├── notebooks       <- Jupyter notebooks
+│   ├── outputs         <- Hydra's outputs (created automatically)
+│   ├── src             <- Pipeline package
+│   │   ├── data        <- Data fetching/reading routines
+│   │   ├── features    <- Feature extraction/preprocessing
+│   │   ├── models      <- Routines to train and inference models
+│   │   └── settings    <- Config entities
+│   └── testing         <- Unit-testing routines
+└── online_inference    <- Online inference (as a Flask app)
+    ├── app
+    │   ├── utils
+    │   └── view        <- Routes + application factory
+    ├── configs         <- Application settings
+    ├── data
+    └── env             <- .env files
 ```
 
 ## __Prerequisites__
@@ -31,3 +39,6 @@ For configuration management of the project, `hydra` framework is utilized ([hyd
 
 I do not perform much EDA in this section for a number of reasons: I have already worked with this dataset once, and that last time I implemented PCA to prove
 that the target variable (cancer type of the patient) is linearly separable ([notebook with nice graphs](https://colab.research.google.com/github/sudotouchwoman/math-misc/blob/main/notebooks/PCA-and-graph-clustering.ipynb)). All the features are already denoised and distributed without outliers. This time I aimed to design a pipeline capable of multiple optional steps, that is why transforms for categorical features are present, yet there are no actual categorical features in the dataset.
+
+`online_inference` directory contains Flask web-application that implements REST API for inference.
+As the model artifact requires additional dependencies from `ml_project`, the `src` directory with pipeline sources is copied to `online_inference` (in sake of simplicity and in order to reduce  potential headache with distribution. It is preferable to wrap shared dependencies into a distributed python package but in this example in seemed to bring too much overhead).
