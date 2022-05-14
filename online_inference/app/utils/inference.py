@@ -1,5 +1,5 @@
 import pickle
-from typing import Optional, Union, List
+from typing import Optional, Union, List, Any
 
 import numpy as np
 import pandas as pd
@@ -29,6 +29,14 @@ def load_artifact(path: str) -> Optional[Pipeline]:
         log.error(msg="Failed to load model artifact")
         log.error(msg=f"{e}")
         return
+
+
+def validate_artifact(artifact: Any) -> bool:
+    if not isinstance(artifact, Pipeline):
+        log.warning(msg="The model should be a Pipeline instance")
+        log.warning(msg=f"Got {type(artifact)}")
+        return False
+    return True
 
 
 def make_prediction(features: Union[List, pd.DataFrame]) -> np.ndarray:

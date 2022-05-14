@@ -1,12 +1,10 @@
 import io
 import json
 from dataclasses import dataclass
-from typing import List, Optional, Tuple, Union, Any
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
-
-from sklearn.pipeline import Pipeline
 
 from .. import default_logger
 
@@ -70,14 +68,6 @@ def load_stats(source: str, /) -> Optional[Tuple[np.ndarray, np.ndarray]]:
         return
 
 
-def validate_artifact(artifact: Any) -> bool:
-    if not isinstance(artifact, Pipeline):
-        log.warning(msg="The model should be a Pipeline instance")
-        log.warning(msg=f"Got {type(artifact)}")
-        return False
-    return True
-
-
 def table_structure_validation(
     data: pd.DataFrame,
     schema: TabularDataSchema,
@@ -125,8 +115,8 @@ def outlier_validation(
     log.debug(msg="Checking the data for ouliers")
     # perform simple sigma test (ensuer that incoming data
     # approximately belongs to the original training data distribution)
-    sigma_ranged = (
-        (mean - sigma_range * std <= data) + (data <= mean + sigma_range * std)
+    sigma_ranged = (mean - sigma_range * std <= data) + (
+        data <= mean + sigma_range * std
     )
 
     if sigma_ranged.all():
