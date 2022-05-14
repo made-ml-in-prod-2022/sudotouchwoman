@@ -1,7 +1,7 @@
 from flask import current_app
 
 from .inference import load_artifact
-from .validate import load_tabular_schema, load_stats
+from .validate import load_tabular_schema, load_stats, validate_artifact
 
 from .. import AppConfig, default_logger
 
@@ -14,7 +14,7 @@ def on_startup(settings: AppConfig) -> bool:
         log.debug(msg="Collecting model artifact")
 
         artifact = load_artifact(settings.artifact_path)
-        if not artifact:
+        if not validate_artifact(artifact):
             log.fatal(msg="Failed to load artifact, aborting startup")
             return
 
@@ -31,4 +31,4 @@ def on_startup(settings: AppConfig) -> bool:
         current_app.config["ARTIFACT"] = artifact
         current_app.config["TABLE_SCHEMA"] = table_schema
         current_app.config["STATS"] = stats
-        return True
+    return True
