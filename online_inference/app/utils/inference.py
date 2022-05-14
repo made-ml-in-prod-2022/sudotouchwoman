@@ -1,7 +1,12 @@
 import pickle
-from typing import Optional
+from typing import Optional, Union, List
+
+import numpy as np
+import pandas as pd
 
 from sklearn.pipeline import Pipeline
+
+from flask import current_app
 
 from .. import default_logger
 
@@ -24,3 +29,12 @@ def load_artifact(path: str) -> Optional[Pipeline]:
         log.error(msg="Failed to load model artifact")
         log.error(msg=f"{e}")
         return
+
+
+def make_prediction(features: Union[List, pd.DataFrame]) -> np.ndarray:
+    log.debug(msg="Predicts")
+    if isinstance(features, list):
+        log.debug(msg="Casting list to DataFrame")
+        features = pd.DataFrame(features)
+
+    return current_app.config["ARTIFACT"].predict(features)

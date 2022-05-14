@@ -1,10 +1,12 @@
 import io
 import json
 from dataclasses import dataclass
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union, Any
 
 import numpy as np
 import pandas as pd
+
+from sklearn.pipeline import Pipeline
 
 from .. import default_logger
 
@@ -61,11 +63,19 @@ def load_stats(source: str, /) -> Optional[Tuple[np.ndarray, np.ndarray]]:
         FileNotFoundError,
         KeyError,
         ValueError,
-        TypeError
+        TypeError,
     ) as e:
         log.error(msg="Encountered error during stats loading")
         log.error(msg=f"{e}")
         return
+
+
+def validate_artifact(artifact: Any) -> bool:
+    if not isinstance(artifact, Pipeline):
+        log.warning(msg="The model should be a Pipeline instance")
+        log.warning(msg=f"Got {type(artifact)}")
+        return False
+    return True
 
 
 def table_structure_validation(
@@ -85,7 +95,7 @@ def table_structure_validation(
             return False
         raise ValueError("Duplicate columns")
 
-    if set(numeric_cols) != set(schema.numeric_columns):
+    if numeric_cols != schema.numeric_columns:
         log.warning(msg="Numeric columns validation aborted")
         log.warning(msg=f"Expected {set(schema.numeric_columns)}")
         log.warning(msg=f"found {set(numeric_cols)}")
@@ -93,7 +103,7 @@ def table_structure_validation(
             return False
         raise ValueError("Numeric columns mismatch")
 
-    if set(categorical_cols) != set(schema.categorical_columns):
+    if categorical_cols != schema.categorical_columns:
         log.warning(msg="Categorical columns validation aborted")
         log.warning(msg=f"Expected {set(schema.categorical_columns)}")
         log.warning(msg=f"Found {set(categorical_cols)}")
@@ -109,12 +119,15 @@ def outlier_validation(
     *,
     mean: np.ndarray,
     std: np.ndarray,
+    sigma_range: int = 3,
     raises: bool = False,
 ) -> bool:
     log.debug(msg="Checking the data for ouliers")
     # perform simple sigma test (ensuer that incoming data
     # approximately belongs to the original training data distribution)
-    sigma_ranged = mean - 3 * std <= data <= mean + 3 * std
+    sigma_ranged = (
+        (mean - sigma_range * std <= data) + (data <= mean + sigma_range * std)
+    )
 
     if sigma_ranged.all():
         log.debug(msg="6-sigma test passed")

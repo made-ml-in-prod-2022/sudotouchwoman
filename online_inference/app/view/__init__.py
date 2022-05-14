@@ -13,7 +13,9 @@ def application_factory(settings: AppConfig):
     with app.app_context():
         if on_startup(settings):
             # startup routines worked out correctly
+            log.debug(msg="All items collected, updating current app's config")
             app.config["HEALTHY"] = True
+            log.debug(msg="Startup routines done")
 
         log.info(msg="Application configured")
         return app
