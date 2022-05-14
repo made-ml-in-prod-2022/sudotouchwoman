@@ -1,7 +1,7 @@
 _target_: src.settings.params.EstimatorConfig
 
-model_artifact_path: ${dir_prefix}/artifacts/random-forest.pkl
-metrics_path: ${dir_prefix}/metrics/random-forest.json
+model_artifact_path: random-forest.pkl
+metrics_path: random-forest.json
 
 model_type: RandomForest
 pos_label: M
