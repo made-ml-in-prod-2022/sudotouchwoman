@@ -8,20 +8,20 @@ import numpy as np
 import pandas as pd
 from sklearn.pipeline import Pipeline
 
-from features.extract import (
+from src.features.extract import (
     extract_feature_columns,
     extract_target,
     split_data,
     SplitConfig,
 )
 
-from features.process import (
+from src.features.process import (
     numeric_features_transform,
     # categorical_features_transform,
     # preprocessing_pipeline,
 )
 
-from settings.features_params import FeaturesConfig
+from src.settings.params import FeaturesConfig
 
 
 @pytest.fixture
@@ -114,7 +114,7 @@ def test_logger_calls(
     mocker: MockerFixture,
 ):
     mock_logger = mocker.stub()
-    mocker.patch("features.extract.log.error", mock_logger)
+    mocker.patch("src.features.extract.log.error", mock_logger)
 
     with pytest.raises(KeyError) as exc_info:
         # must be missing and raise
@@ -188,7 +188,7 @@ def test_numeric_features_transform(
 ):
     # spy logger calls
     mock_logger = mocker.stub()
-    mocker.patch("features.process.log.error", mock_logger)
+    mocker.patch("src.features.process.log.error", mock_logger)
 
     # this call with default settings is fine
     num_transformer = numeric_features_transform(features_conf.scaler_type)

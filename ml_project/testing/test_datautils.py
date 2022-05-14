@@ -6,8 +6,8 @@ from requests import ConnectionError
 import pytest
 import pandas as pd
 
-from data.datautils import download_file, create_dataset, read_dataset
-from settings.data_params import DatasetConfig
+from src.data.datautils import download_file, create_dataset, read_dataset
+from src.settings.params import DatasetConfig
 from testing.utils import online, TMP_DIR_NAME
 
 
