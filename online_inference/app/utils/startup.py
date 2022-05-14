@@ -1,7 +1,7 @@
 from flask import current_app
 
-from .inference import load_artifact
-from .validate import load_tabular_schema, load_stats, validate_artifact
+from .inference import load_artifact, validate_artifact
+from .validate import load_tabular_schema, load_stats
 
 from .. import AppConfig, default_logger
 
@@ -27,6 +27,7 @@ def on_startup(settings: AppConfig) -> bool:
         if not stats:
             msg = "Failed to load statistics for features, aborting statrup"
             log.fatal(msg=msg)
+            return
 
         current_app.config["ARTIFACT"] = artifact
         current_app.config["TABLE_SCHEMA"] = table_schema
