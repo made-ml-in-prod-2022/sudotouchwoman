@@ -8,7 +8,7 @@ output: prediction.json
 dir_prefix: ../../..
 
 inference:
-  _target_: settings.root_params.InfConfig
+  _target_: src.settings.params.InfConfig
   artifact: ${dir_prefix}/${artifact}
   input_features: ${dir_prefix}/${input}
   output_target:  ${output}

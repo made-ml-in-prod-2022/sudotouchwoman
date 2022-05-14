@@ -5,16 +5,16 @@ import hydra
 from hydra.utils import instantiate
 from omegaconf import OmegaConf
 
-from settings.root_params import RootConfig
-from data import read_dataset, create_dataset
+from src.settings.params import RootConfig
+from src.data import read_dataset, create_dataset
 
-from features.extract import (
+from src.features import (
     extract_target,
     extract_feature_columns,
     split_data,
+    Preprocessor
 )
-from features.preprocessing import Preprocessor
-from models import (
+from src.models import (
     make_estimator,
     make_inference_pipeline,
     get_metrics,
@@ -43,9 +43,7 @@ def main(cfg: OmegaConf):
     log.info(msg=f"Loaded dataset: {raw_data.shape}")
     log.debug(msg=f"Dataset columns: {raw_data.columns.to_list()}")
 
-    feature_columns = (
-        feature.numeric_features + feature.categorical_features
-    )
+    feature_columns = feature.numeric_features + feature.categorical_features
 
     target = extract_target(raw_data, feature.target)
     features = extract_feature_columns(raw_data, feature_columns)
@@ -71,9 +69,7 @@ def main(cfg: OmegaConf):
     log.info(msg="Created end-to-end inference pipeline")
 
     metrics = get_metrics(
-        val_y,
-        end_to_end_pipeline.predict(val_features),
-        estimator
+        val_y, end_to_end_pipeline.predict(val_features), estimator
     )
     log.info(msg=f"Collected metrics: {metrics}")
     metrics.dump(estimator.metrics_path)

@@ -7,7 +7,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 
-from settings.features_params import FeaturesConfig
+from ..settings.params import FeaturesConfig
 
 from .process import (
     numeric_features_transform,

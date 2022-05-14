@@ -11,7 +11,7 @@ from sklearn.ensemble import (
     RandomForestClassifier,
 )
 
-from settings.training_params import EstimatorConfig
+from ..settings.params import EstimatorConfig
 
 
 log = logging.getLogger(__name__)

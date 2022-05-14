@@ -1,4 +1,4 @@
-_target_: settings.features_params.FeaturesConfig
+_target_: src.settings.params.FeaturesConfig
 
 target: diag
 PCA_components: 10

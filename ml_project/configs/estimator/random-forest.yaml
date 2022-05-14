@@ -1,4 +1,4 @@
-_target_: settings.training_params.EstimatorConfig
+_target_: src.settings.params.EstimatorConfig
 
 model_artifact_path: ${dir_prefix}/artifacts/random-forest.pkl
 metrics_path: ${dir_prefix}/metrics/random-forest.json

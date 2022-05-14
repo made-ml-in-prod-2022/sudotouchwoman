@@ -5,7 +5,7 @@ import requests
 
 import pandas as pd
 
-from settings.data_params import DatasetConfig
+from ..settings.params import DatasetConfig
 
 log = logging.getLogger(__name__)
 
