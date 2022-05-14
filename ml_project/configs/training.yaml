@@ -1,4 +1,4 @@
-_target_: settings.root_params.RootConfig
+_target_: src.settings.params.RootConfig
 
 defaults:
   - _self_
@@ -10,7 +10,7 @@ dir_prefix: ../../..
 random_state: 100
 
 dataset:
-  _target_: settings.data_params.DatasetConfig
+  _target_: src.settings.params.DatasetConfig
   download: True
   source_url: https://archive.ics.uci.edu/ml/machine-learning-databases/breast-cancer-wisconsin/wdbc.data
   dataset_dir: ${dir_prefix}/data/raw
@@ -18,6 +18,6 @@ dataset:
   random_state: ${random_state}
 
 splitter:
-  _target_: settings.data_params.SplitConfig
+  _target_: src.settings.params.SplitConfig
   validation: 0.2
   random_state: ${random_state}

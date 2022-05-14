@@ -5,8 +5,8 @@ import hydra
 from hydra.utils import instantiate
 from omegaconf import OmegaConf
 
-from models import load_pipeline, dump_prediction
-from data import read_inference_data
+from src.models import load_pipeline, dump_prediction
+from src.data import read_inference_data
 
 
 log = logging.getLogger(__name__)

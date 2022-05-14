@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from settings.data_params import SplitConfig
+from ..settings.params import SplitConfig
 
 __all__ = ["extract_target", "extract_feature_columns", "split_data"]
 
