@@ -15,7 +15,12 @@ def load_artifact(path: str) -> Optional[Pipeline]:
             model = pickle.load(f)
             log.debug(msg="Artifact loaded")
             return model
-    except (FileNotFoundError, pickle.UnpicklingError) as e:
-        log.fatal(msg="Failed to load model artifact")
-        log.fatal(msg=f"{e}")
+    except (
+        FileNotFoundError,
+        pickle.UnpicklingError,
+        TypeError,
+        ModuleNotFoundError,
+    ) as e:
+        log.error(msg="Failed to load model artifact")
+        log.error(msg=f"{e}")
         return
