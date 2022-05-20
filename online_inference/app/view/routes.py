@@ -27,7 +27,7 @@ def predict_handler() -> str:
     log.info(msg="Prediction requested")
     if not operating():
         log.warning(msg="App is not set up correctly")
-        return redirect(url_for(".page_not_found_redirect"))
+        return redirect(url_for(".health_handler"))
     if "payload" not in request.values:
         log.warning(msg="No payload in request")
         return json.dumps(prediction_response(None))

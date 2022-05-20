@@ -28,7 +28,7 @@ def prediction_response(prediction: Optional[List]):
 
 def validate_payload(payload: List[Dict[str, Union[str, float]]]) -> bool:
     log.debug(msg="Performs payload validation")
-    log.debug(msg=f"Payload: {payload}")
+    log.debug(msg=f"Payload: {payload} ({type(payload)})")
 
     try:
         payload = pd.DataFrame(data=payload)

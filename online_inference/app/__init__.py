@@ -1,28 +1,27 @@
 import logging
-from os import getenv
+from os import getenv, getpid
 from dataclasses import dataclass
 
 from flask import Flask
 
-# from dotenv import load_dotenv
-# from click import secho
+from dotenv import load_dotenv
+from click import secho
 
-# ENV_PATH = getenv("ENV_PATH")
+ENV_PATH = getenv("ENV_PATH")
 
-# if ENV_PATH:
-#     secho(f"Loading environment from {ENV_PATH}", fg="green")
-#     load_dotenv(ENV_PATH)
-# else:
-#     secho("User-defined environment not set", fg="yellow")
+if ENV_PATH:
+    secho(f"Loading environment from {ENV_PATH}", fg="green")
+    load_dotenv(ENV_PATH)
+else:
+    secho("User-defined environment not set", fg="yellow")
 
-LOGFILE = getenv("LOGFILE", "server.log")
+# bind logfile names to pid to
+# let multiple workers write into separate files
+LOGFILE = f'{getenv("LOGFILE", "server")}-{getpid()}.log'
 
 
 @dataclass
 class AppConfig:
-    # host: str = getenv("HOST", "127.0.0.1")
-    # port: int = getenv("PORT", "5000")
-    # debug: bool = getenv("DEBUG", "True") == "True"
     artifact_path: str = getenv("ARTIFACT", None)
     table_schema_path: str = getenv("TABLE_SCHEMA", None)
     feature_stats_path: str = getenv("STATS", None)
@@ -58,6 +57,7 @@ log = default_logger(__name__)
 def make_app(s: AppConfig = AppConfig()) -> Flask:
     from .view import application_factory
 
+    log.info(msg="Application is in the oven")
     log.info(msg=f"Recieved application config: {s}")
     app = application_factory(settings=s)
     return app
