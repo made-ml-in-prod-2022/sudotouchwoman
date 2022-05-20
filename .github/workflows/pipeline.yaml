@@ -4,24 +4,24 @@ on:
   workflow_dispatch:
     inputs:
       logLevel:
-        description: 'Logging level'
+        description: "Logging level"
         required: true
-        default: 'INFO'
+        default: "INFO"
         type: choice
         options:
           - INFO
           - DEBUG
       estimator:
-        description: 'Estimator type'
+        description: "Estimator type"
         required: true
         type: choice
         options:
           - log-reg
           - random-forest
       feature:
-        description: 'Feature extraction pipeline'
+        description: "Feature extraction pipeline"
         required: true
-        default: 'no-pca'
+        default: "no-pca"
         type: choice
         options:
           - no-pca
@@ -33,7 +33,6 @@ jobs:
   # and training pipeline run
   # the artifacts are also saved
   train:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -41,9 +40,9 @@ jobs:
       - name: Set up Python 3.8
         uses: actions/setup-python@v3
         with:
-          python-version: '3.8'
-          architecture: 'x64'
-          cache: 'pip'
+          python-version: "3.8"
+          architecture: "x64"
+          cache: "pip"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
