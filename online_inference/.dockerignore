@@ -1,0 +1,9 @@
+*.git*
+*.env
+docs/
+logs/
+tmp/
+env/
+*cache*/
+Dockerfile
+*docker-compose*
