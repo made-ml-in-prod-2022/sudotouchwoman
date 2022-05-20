@@ -1,0 +1,9 @@
+_target_: settings.features_params.FeaturesConfig
+
+target: diag
+PCA_components: 10
+PCA_kernel: linear
+numeric_imputer_strategy: mean
+random_state: ${random_state}
+scaler_type: standard
+encoder_type: ohe

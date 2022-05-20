@@ -1,0 +1,14 @@
+_target_: settings.training_params.EstimatorConfig
+
+model_artifact_path: ${dir_prefix}/artifacts/log-reg.pkl
+metrics_path: ${dir_prefix}/metrics/log-reg.json
+
+model_type: LogReg
+pos_label: M
+neg_label: B
+model_params:
+  max_iter: 1500
+  penalty: elasticnet
+  l1_ratio: 0.8
+  random_state: ${random_state}
+  solver: saga

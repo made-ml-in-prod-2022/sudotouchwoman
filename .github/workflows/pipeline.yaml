@@ -11,6 +11,21 @@ on:
         options:
           - INFO
           - DEBUG
+      estimator:
+        description: 'Estimator type'
+        required: true
+        type: choice
+        options:
+          - log-reg
+          - random-forest
+      feature:
+        description: 'Feature extraction pipeline'
+        required: true
+        default: 'no-pca'
+        type: choice
+        options:
+          - no-pca
+          - linear-pca
 
 jobs:
   # this workflow contains
@@ -38,19 +53,14 @@ jobs:
       - name: Run the training pipeline
         working-directory: ./ml_project
         run: |
-          python pipeline.py hydra.job_logging.root.handlers=[console,file] hydra.job_logging.root.level=${{ github.event.inputs.logLevel }}
-      - name: Find out where the artifacts and logfiles are
-        run: |
-          apt install tree
-          tree -I *cache*
+          python pipeline.py hydra.job_logging.root.handlers=[console,file] hydra.job_logging.root.level=${{ github.event.inputs.logLevel }} estimator=${{ github.event.inputs.estimator }} feature=${{ github.event.inputs.feature }}
 
       - name: Save the artifacts
-        working-directory: .
         uses: actions/upload-artifact@v3
         with:
           name: training-artifacts
           path: |
-            ml_project/pipeline.log
-            ml_project/artifacts/
+            ml_project/artifacts/*.pkl
+            ml_project/metrics/*.json
             ml_project/outputs/
         if: ${{ always() }}
