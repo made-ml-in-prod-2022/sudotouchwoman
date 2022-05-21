@@ -4,6 +4,7 @@ docs/
 logs/
 tmp/
 env/
-*cache*/
+**/__cache__
+*.pyc
 Dockerfile
 *docker-compose*
