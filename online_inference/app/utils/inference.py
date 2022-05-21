@@ -1,10 +1,12 @@
 import pickle
 from typing import Optional, Union, List, Any
 
+import requests
 import numpy as np
 import pandas as pd
 
 from sklearn.pipeline import Pipeline
+from validators import url
 
 from flask import current_app
 
@@ -16,6 +18,13 @@ log = default_logger(__name__)
 def load_artifact(path: str) -> Optional[Pipeline]:
     log.debug(msg=f"Reading model artifact from {path}")
     try:
+        if url(path):
+            log.debug(msg="Collecting pickle from specified URL")
+            with requests.get(path) as response:
+                response.raise_for_status()
+                model = pickle.loads(response.content)
+                return model
+
         with open(path, "rb") as f:
             model = pickle.load(f)
             log.debug(msg="Artifact loaded")
@@ -23,10 +32,13 @@ def load_artifact(path: str) -> Optional[Pipeline]:
     except (
         FileNotFoundError,
         pickle.UnpicklingError,
+        requests.HTTPError,
         TypeError,
         ModuleNotFoundError,
+        Exception
     ) as e:
         log.error(msg="Failed to load model artifact")
+        log.error(msg=f"{type(e)}")
         log.error(msg=f"{e}")
         return
 

@@ -9,8 +9,19 @@ log = default_logger(__name__)
 
 
 def on_startup(settings: AppConfig) -> bool:
+    """
+    Startup routine: try to collect application resources:
+
+    + model artifact
+    + input data format for requests
+    + statistics
+
+    :param settings, `AppConfig`
+
+    :rtype `bool`
+    """
     with current_app.app_context():
-        log.debug(msg="Running startup routine")
+        log.info(msg="Running startup routine")
         log.debug(msg="Collecting model artifact")
 
         artifact = load_artifact(settings.artifact_path)

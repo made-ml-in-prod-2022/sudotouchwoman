@@ -3,8 +3,11 @@ import json
 from dataclasses import dataclass
 from typing import List, Optional, Tuple, Union
 
+import requests
 import numpy as np
 import pandas as pd
+
+from validators import url
 
 from .. import default_logger
 
@@ -13,6 +16,11 @@ log = default_logger(__name__)
 
 @dataclass
 class TabularDataSchema:
+    """
+    Container with column format for `DataFrame`
+    validation on incoming `/predict` requests
+    """
+
     columns: List[str]
     numeric_columns: List[str]
     categorical_columns: List[str]
@@ -21,16 +29,41 @@ class TabularDataSchema:
 def load_tabular_schema(
     source: Union[str, io.StringIO]
 ) -> Optional[TabularDataSchema]:
+    """
+    Loads configuration for TabularDataSchema
+    in a JSON format. Returns `None` on error
+
+    :param source, `str` or `io.StringIO` - resource location
+    or buffer. Supports URLs and filenames
+
+    :rtype `TabularDataSchema` or `None`
+    """
     # deserialize JSON into tabular data schema (essentially
     # sets of columns) to later ensure incoming data
+    log.debug(msg=f"Reading feature schema from {source}")
     if isinstance(source, str):
         try:
-            with open(source, "r") as f:
-                return TabularDataSchema(**json.load(f))
-        except (FileNotFoundError, json.JSONDecodeError, KeyError) as e:
+            if url(source):
+                log.debug(msg="Collecting from specified URL")
+                with requests.get(source) as response:
+                    response.raise_for_status()
+                    return TabularDataSchema(**json.loads(response.content))
+            else:
+                log.debug(msg="Collecting from local filesystem")
+                with open(source, "r") as f:
+                    return TabularDataSchema(**json.load(f))
+        except (
+            FileNotFoundError,
+            json.JSONDecodeError,
+            KeyError,
+            TypeError,
+            requests.HTTPError,
+        ) as e:
             log.error(msg="Encountered error during schema loading")
+            log.error(msg=f"{type(e)}")
             log.error(msg=f"{e}")
             return
+
     if isinstance(source, io.StringIO):
         try:
             return TabularDataSchema(**json.load(source))
@@ -43,11 +76,26 @@ def load_tabular_schema(
 
 
 def load_stats(source: str, /) -> Optional[Tuple[np.ndarray, np.ndarray]]:
+    """
+    Collect mean and std for numerical features obtained
+    earlier on train data to perform outlier detection
+
+    :param source, str - path/URL to a valid JSON
+
+    :rtype `tuple` with 2 `np.ndarray` (mean & std, respectively)
+    or `None` if errors occured
+    """
     log.debug(msg=f"Reading statistical data from {source}")
 
     try:
-        with open(source, "r") as f:
-            stats = json.load(f)
+        if url(source):
+            log.debug(msg="Collecting from specified URL")
+            with requests.get(source) as response:
+                response.raise_for_status()
+                stats = json.loads(response.content)
+        else:
+            with open(source, "r") as f:
+                stats = json.load(f)
         log.debug(msg="Read JSON data")
 
         if len(stats["mean"]) != len(stats["std"]):
@@ -62,8 +110,10 @@ def load_stats(source: str, /) -> Optional[Tuple[np.ndarray, np.ndarray]]:
         KeyError,
         ValueError,
         TypeError,
+        requests.HTTPError,
     ) as e:
         log.error(msg="Encountered error during stats loading")
+        log.error(msg=f"{type(e)}")
         log.error(msg=f"{e}")
         return
 
@@ -74,6 +124,16 @@ def table_structure_validation(
     *,
     raises: bool = False,
 ) -> bool:
+    """
+    Validate `DataFrame` using `TabularDataSchema`
+
+    :param data, `pd.DataFrame` - df to check
+    :param schema, `TabularDataSchema` to refer to
+    :param raises, `bool` - whether to raise `TypeError` on
+    validation failure. Default `False`.
+
+    :rtype `bool`
+    """
     log.debug(msg="Checking incoming DataFrame structure")
     all_cols = data.columns.tolist()
     numeric_cols = data.select_dtypes(include=np.number).columns.tolist()
@@ -120,8 +180,19 @@ def outlier_validation(
     sigma_range: int = 3,
     raises: bool = False,
 ) -> bool:
+    """
+    Simple 6-sigma test with adjustable tolerance
+
+    :param data `np.ndarray` to validate
+    :param mean - `np.ndarray` with columnwise means
+    :param std - `np.ndarray` with columnwise std
+    :param raises - bool, whether to raise `TypeError`
+    on validation failure. Default `False`.
+
+    :rtype `bool`
+    """
     log.debug(msg="Checking the data for ouliers")
-    # perform simple sigma test (ensuer that incoming data
+    # perform simple sigma test (ensure that incoming data
     # approximately belongs to the original training data distribution)
     sigma_ranged = (mean - sigma_range * std > data) + (
         data > mean + sigma_range * std
@@ -131,8 +202,7 @@ def outlier_validation(
         log.debug(msg="6-sigma test passed")
         return True
 
-    index = np.where(sigma_ranged != 0)
-    log.warning(msg=f"Detected outlier at positions {index}")
+    log.warning(msg="Found some outliers")
     if not raises:
         return False
     raise ValueError("Sample data did not pass sigma test")
