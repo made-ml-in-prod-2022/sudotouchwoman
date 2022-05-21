@@ -1,5 +1,5 @@
 from typing import Dict, List
-from os import remove
+from os import mkdir, remove
 from os.path import isdir
 
 import pytest
@@ -39,6 +39,8 @@ def invalid_application_config() -> Dict[str, str]:
     Works like `testing_appication_config`, but
     the keywords have invalid values. Given that, the application
     should abort the startup and respond as unhealthy
+
+    :rtype: Dict[str, str]
     """
     return dict(
         artifact_path=None,
@@ -58,7 +60,8 @@ def tmp_application_config(table_format: Dict[str, str]) -> Dict[str, str]:
     """
     # startup: create temporary files with resources
     # tmp dir should be created at module scope for testing routines
-    assert isdir(TMP_DIR_NAME)
+    tmp = TMP_DIR_NAME
+    mkdir(tmp) if not isdir(tmp) else None
 
     # this one is a bit tricky: application expects the artifact
     # to be a filename to pickle dump with actual Pipeline instance

@@ -1,22 +1,7 @@
-from os import mkdir, remove, walk
-from os.path import isdir, join
+from typing import Tuple
 
 import pytest
 from app import make_app, AppConfig
-
-from . import TMP_DIR_NAME
-
-
-def setup_module(module):
-    tmp = TMP_DIR_NAME
-    mkdir(tmp) if not isdir(tmp) else None
-
-
-def teardown_module(module):
-    tmp = TMP_DIR_NAME
-    for root, _, files in walk(tmp):
-        for file in files:
-            remove(join(root, file))
 
 
 def test_app_config(testing_application_config):
@@ -35,39 +20,45 @@ def test_app_config(testing_application_config):
     )
 
 
+@pytest.fixture
+def config_keys() -> Tuple[str]:
+    return "ARTIFACT", "TABLE_SCHEMA", "STATS", "HEALTHY"
+
+
+def test_invalid_startup(invalid_application_config, config_keys):
+    app = make_app(AppConfig(**invalid_application_config))
+
+    for property in config_keys:
+        assert property not in app.config
+
+    with app.test_client() as c:
+        # if startup was aborted, app
+        # should not respond with 200 on healthcheck
+        response = c.get("/health")
+        assert response.status_code == 200
+        assert b'{"status":200}' not in response.data
+
+
 @pytest.mark.parametrize(
     "config",
     [
+        pytest.lazy_fixture("tmp_application_config"),
         pytest.lazy_fixture("testing_application_config"),
-        pytest.lazy_fixture("invalid_application_config")
-    ]
+    ],
 )
-def test_application_factory(config):
+def test_with_tmp_config(config, config_keys):
     # test that applicationn instance is created
     # with correct config values
-    cfg = AppConfig(**config)
-    app = make_app(cfg)
+    app = make_app(AppConfig(**config))
+
+    # after correct startup, non-empty config entries
+    # should be created to store model, input schema etc
+    for property in config_keys:
+        assert property in app.config
+        assert app.config[property] is not None
 
     with app.test_client() as c:
+        # app should be running and healthy
         response = c.get("/health")
         assert response.status_code == 200
-        assert b"status" in response.data
-
-
-@pytest.mark.parametrize(
-    "config",
-    [
-        pytest.lazy_fixture("tmp_application_config")
-    ]
-)
-def test_with_tmp_config(config):
-    # test that applicationn instance is created
-    # with correct config values
-    cfg = AppConfig(**config)
-    app = make_app(cfg)
-
-    with app.test_client() as c:
-        response = c.get("/health")
-        assert response.status_code == 200
-        print(response.data)
-        assert b"{\"status\":200}" in response.data
+        assert b'{"status":200}' in response.data
