@@ -22,6 +22,15 @@ LOGFILE = f'{getenv("LOGFILE", "server")}-{getpid()}.log'
 
 @dataclass
 class AppConfig:
+    """
+    Config with paths to resource locations:
+    values are collected from environmental variables by default
+
+    artifact_path: str
+    table_schema_path: str
+    feature_stats_path: str
+    """
+
     artifact_path: str = getenv("ARTIFACT", None)
     table_schema_path: str = getenv("TABLE_SCHEMA", None)
     feature_stats_path: str = getenv("STATS", None)
