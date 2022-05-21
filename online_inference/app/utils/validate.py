@@ -202,7 +202,6 @@ def outlier_validation(
         log.debug(msg="6-sigma test passed")
         return True
 
-    log.warning(msg="Found some outliers")
     if not raises:
         return False
     raise ValueError("Sample data did not pass sigma test")

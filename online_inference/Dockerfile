@@ -11,13 +11,16 @@ WORKDIR /app
 
 # chain the command to reduce number of layers
 RUN mkdir logs \
- && pip install --upgrade pip \
- && pip install -r requirements.txt \
- && pip install gunicorn \
+ && pip install --no-cache-dir --upgrade pip \
+ && pip install --no-cache-dir -r requirements.txt \
+ && pip install --no-cache-dir gunicorn \
  && rm requirements.txt
 
 # copy the sources as the last step
 # and expose the server port
 #  to make it accessible from the outside
-COPY ./ /app/
+COPY ./app/ /app/app
+COPY ./src/ /app/src
+COPY wsgi.py /app/wsgi.py
+
 EXPOSE 5000

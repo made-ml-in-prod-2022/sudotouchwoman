@@ -40,18 +40,23 @@ def make_logger(name: str, logfile: str) -> logging.Logger:
     log = logging.getLogger(name)
 
     if not log.hasHandlers():
-        DEBUGLEVEL = getenv("DEBUG_LEVEL", "DEBUG")
-
-        log.disabled = getenv("LOG_ON", "True") == "False"
-        log.setLevel(getattr(logging, DEBUGLEVEL))
+        LOGLEVEL = getenv("LOG_LEVEL", "DEBUG")
+        log.setLevel(getattr(logging, LOGLEVEL.upper()))
 
         formatter = logging.Formatter(
             "[%(asctime)s]::[%(levelname)s]::[%(name)s]::%(message)s",
             "%D # %H:%M:%S",
         )
-        handler = logging.FileHandler(filename=f"{logfile}", encoding="utf-8")
-        handler.setFormatter(formatter)
-        log.addHandler(handler)
+
+        if getenv("LOG_FILE", "False") == "True":
+            file = logging.FileHandler(filename=f"{logfile}", encoding="utf-8")
+            file.setFormatter(formatter)
+            log.addHandler(file)
+
+        if getenv("LOG_STREAM", "False") == "True":
+            stream = logging.StreamHandler()
+            stream.setFormatter(formatter)
+            log.addHandler(stream)
 
     return log
 
