@@ -9,6 +9,7 @@ hydra-core==1.1.2
 omegaconf==2.1.2
 pytest==7.1.2
 pytest-mock==3.7.0
+pytest-lazy-fixture==0.6.3
 Flask==2.1.2
 python-dotenv==0.20.0
 click==8.1.2
