@@ -1,7 +1,9 @@
 from typing import Tuple
 
 import pytest
+
 from app import make_app, AppConfig
+from . import artifact_present
 
 
 def test_app_config(testing_application_config):
@@ -43,9 +45,18 @@ def test_invalid_startup(invalid_application_config, config_keys):
     "config",
     [
         pytest.lazy_fixture("tmp_application_config"),
+        # Note: used to fail in CI environment as there is no actual
+        # pickle in data/ directory.
+        # Fix: skipping test if the sample artifact is not found
+        # Consider creating a pickle first
+        # using pipeline.py in `ml_project` first
+        # (this also applies to running the server)
+        # and copying it to the desired location. Server should be
+        # given a valid path to the binary to startup and operate
         pytest.lazy_fixture("testing_application_config"),
     ],
 )
+@pytest.mark.skipif(not artifact_present, reason="Model pickle not found")
 def test_with_tmp_config(config, config_keys):
     # test that applicationn instance is created
     # with correct config values

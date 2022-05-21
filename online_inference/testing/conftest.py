@@ -4,7 +4,7 @@ from os.path import isdir
 
 import pytest
 
-from . import TMP_DIR_NAME
+from . import TMP_DIR_NAME, SAMPLE_PICKLE_PATH
 from .mocks import testing_artifact, testing_stats, testing_schema
 
 
@@ -27,7 +27,7 @@ def testing_application_config() -> Dict[str, str]:
     :rtype - Dict[str, str] - AppConfig kwargs
     """
     return dict(
-        artifact_path="data/log-reg.pkl",
+        artifact_path=SAMPLE_PICKLE_PATH,
         table_schema_path="configs/tabular-schema.json",
         feature_stats_path="configs/statistics.json",
     )
