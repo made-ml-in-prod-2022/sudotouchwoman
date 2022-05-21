@@ -85,6 +85,14 @@ def table_structure_validation(
             return False
         raise ValueError("Duplicate columns")
 
+    if all_cols != schema.columns:
+        log.warning(msg="Columns format validation aborted")
+        log.warning(msg=f"Expected {set(schema.columns)}")
+        log.warning(msg=f"found {set(all_cols)}")
+        if not raises:
+            return False
+        raise ValueError("Column format mismatch")
+
     if numeric_cols != schema.numeric_columns:
         log.warning(msg="Numeric columns validation aborted")
         log.warning(msg=f"Expected {set(schema.numeric_columns)}")
@@ -115,15 +123,15 @@ def outlier_validation(
     log.debug(msg="Checking the data for ouliers")
     # perform simple sigma test (ensuer that incoming data
     # approximately belongs to the original training data distribution)
-    sigma_ranged = (mean - sigma_range * std <= data) + (
-        data <= mean + sigma_range * std
+    sigma_ranged = (mean - sigma_range * std > data) + (
+        data > mean + sigma_range * std
     )
 
-    if sigma_ranged.all():
+    if not sigma_ranged.any():
         log.debug(msg="6-sigma test passed")
         return True
 
-    index, _ = np.where(sigma_ranged == 0)
+    index = np.where(sigma_ranged != 0)
     log.warning(msg=f"Detected outlier at positions {index}")
     if not raises:
         return False
