@@ -67,6 +67,37 @@ In order to build the image locally and run it, use:
 $ docker-compose up
 ```
 
+__UPD: run containers without compose__
+
+In order to build the image, run the following command in the `online_inference` directory:
+
+```
+$ docker build -t NAME:TAG .
+```
+
+Note that `NAME` and `TAG` should be a valid image name and image tag, respectively.
+Container requires several configuration options provided via environmental variables.
+These are stored in `env/` directory as `.env` files for convenience. In order to run the
+container locally with specified arguments, use:
+
+```
+$ docker run --env-file env/dev.env -p 5000:5000 sudotouchwoman/wbcd-online-inference
+```
+
+Port forwarding is required to access the application inside the container from host. You may
+change the host port, e.g. to run several containers with the same application simultaneously.
+
+Application can be accessed from the host via testing client too. The only thing to consider is that
+client will of course try to access the app at the host port, not the container's one.
+
+__UPD: pull the image from Docker Hub__
+
+Image was pushed to Docker hub, information is avaliable [there](https://hub.docker.com/r/sudotouchwoman/wbcd-online-inference).
+
+```
+$ docker pull sudotouchwoman/wbcd-online-inference
+```
+
 ## __Pytest+Flask__
 
 Unit/functional tests for the server were implemented using `pytest`.
@@ -85,3 +116,7 @@ In order to run all tests, use:
 ```
 $ python -m pytest
 ```
+
+__NOTE:__ In order to actually run all tests _without skipping any_, one should
+provide the testbed with __model pickle__ at `data/artifact.pkl`. Unit and functional tests for
+the applcication _do not_ test the model's performance and robustness, only the ones of the backend.
