@@ -24,3 +24,5 @@ COPY ./src/ /app/src
 COPY wsgi.py /app/wsgi.py
 
 EXPOSE 5000
+
+ENTRYPOINT ["gunicorn","--workers=1","--threads=4","--timeout=300","--bind","0.0.0.0:5000","wsgi:app"]
