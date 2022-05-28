@@ -94,6 +94,7 @@ def load_stats(source: str, /) -> Optional[Tuple[np.ndarray, np.ndarray]]:
                 response.raise_for_status()
                 stats = json.loads(response.content)
         else:
+            log.debug(msg="Collecting from local filesystem")
             with open(source, "r") as f:
                 stats = json.load(f)
         log.debug(msg="Read JSON data")

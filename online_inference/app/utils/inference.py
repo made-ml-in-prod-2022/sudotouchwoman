@@ -25,6 +25,7 @@ def load_artifact(path: str) -> Optional[Pipeline]:
                 model = pickle.loads(response.content)
                 return model
 
+        log.debug(msg="Collecting model pickle from local filesystem")
         with open(path, "rb") as f:
             model = pickle.load(f)
             log.debug(msg="Artifact loaded")
@@ -35,12 +36,11 @@ def load_artifact(path: str) -> Optional[Pipeline]:
         requests.HTTPError,
         TypeError,
         ModuleNotFoundError,
-        Exception
+        Exception,
     ) as e:
         log.error(msg="Failed to load model artifact")
         log.error(msg=f"{type(e)}")
         log.error(msg=f"{e}")
-        return
 
 
 def validate_artifact(artifact: Any) -> bool:
@@ -51,10 +51,16 @@ def validate_artifact(artifact: Any) -> bool:
     return True
 
 
-def make_prediction(features: Union[List, pd.DataFrame]) -> np.ndarray:
+def make_prediction(
+    features: Union[List, pd.DataFrame]
+) -> Optional[np.ndarray]:
     log.debug(msg="Predicts")
     if isinstance(features, list):
         log.debug(msg="Casting list to DataFrame")
         features = pd.DataFrame(features)
-
-    return current_app.config["ARTIFACT"].predict(features)
+    try:
+        return current_app.config["ARTIFACT"].predict(features)
+    except Exception as e:
+        log.error(msg="Prediction aborted")
+        log.error(msg=f"{type(e)}")
+        log.error(msg=f"{e}")
