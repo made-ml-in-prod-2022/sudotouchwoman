@@ -1,5 +1,5 @@
 import json
-from flask import Blueprint, redirect, url_for, request
+from flask import Blueprint, jsonify, redirect, url_for, request
 
 from .helper import (
     operating,
@@ -30,21 +30,21 @@ def predict_handler() -> str:
         return redirect(url_for(".health_handler"))
     if "payload" not in request.values:
         log.warning(msg="No payload in request")
-        return json.dumps(prediction_response(None))
+        return jsonify(prediction_response(None))
 
     try:
         payload = json.loads(request.values["payload"])
     except json.JSONDecodeError:
         log.warning(msg="Payload should be an encoded JSON string")
-        return json.dumps(prediction_response(None))
+        return jsonify(prediction_response(None))
 
     log.debug(msg="Sends prediction response")
     if not validate_payload(payload):
         log.warning(msg="Seems like the input did not pass validation")
-        return json.dumps(prediction_response(None))
+        return jsonify(prediction_response(None))
 
     prediction = make_prediction(payload).tolist()
-    return json.dumps(prediction_response(prediction))
+    return jsonify(prediction_response(prediction))
 
 
 @api.errorhandler(404)

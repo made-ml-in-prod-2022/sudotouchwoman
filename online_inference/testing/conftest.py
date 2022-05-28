@@ -4,7 +4,7 @@ from os.path import isdir
 
 import pytest
 
-from . import TMP_DIR_NAME, SAMPLE_PICKLE_PATH
+from . import TMP_DIR_NAME, SAMPLE_PICKLE_PATH, SAMPLE_PREDICTION_REQUEST
 from .mocks import testing_artifact, testing_stats, testing_schema
 
 
@@ -81,3 +81,9 @@ def tmp_application_config(table_format: Dict[str, str]) -> Dict[str, str]:
     # teardown: remove temporary files
     for file in tmp_resources.values():
         remove(file)
+
+
+@pytest.fixture
+def testing_payload() -> str:
+    with open(SAMPLE_PREDICTION_REQUEST) as f:
+        return f.read()
