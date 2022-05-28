@@ -43,8 +43,10 @@ def predict_handler() -> str:
         log.warning(msg="Seems like the input did not pass validation")
         return jsonify(prediction_response(None))
 
-    prediction = make_prediction(payload).tolist()
-    return jsonify(prediction_response(prediction))
+    prediction = make_prediction(payload)
+    if prediction is None:
+        return jsonify(prediction_response(None))
+    return jsonify(prediction_response(prediction.tolist()))
 
 
 @api.errorhandler(404)
