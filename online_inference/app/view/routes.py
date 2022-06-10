@@ -1,5 +1,5 @@
 import json
-from flask import Blueprint, jsonify, redirect, url_for, request
+from flask import Blueprint, Response, jsonify, redirect, url_for, request
 
 from .helper import (
     operating,
@@ -17,14 +17,14 @@ api = Blueprint("api", __name__)
 
 
 @api.route("/health", methods=["GET"])
-def health_handler() -> str:
-    log.info(msg="Application status requested")
+def health_handler() -> Response:
+    log.debug(msg="Application status requested")
     return healthy_response() if operating() else empty_response()
 
 
 @api.route("/predict", methods=["GET"])
 def predict_handler() -> str:
-    log.info(msg="Prediction requested")
+    log.debug(msg="Prediction requested")
     if not operating():
         log.warning(msg="App is not set up correctly")
         return redirect(url_for(".health_handler"))

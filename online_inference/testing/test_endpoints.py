@@ -32,7 +32,7 @@ def test_predict_endpoint(
         # to pass this test
         response = c.get("/health")
         assert response.status_code == 200
-        assert b'{"status":200}' in response.data
+        assert b"Healthy" in response.data
 
         # test with several invalid payload examples
         # ensure that the server has no internal errors
@@ -41,7 +41,6 @@ def test_predict_endpoint(
             response = c.get("/predict", query_string=query_string)
 
             assert response.status_code == 200
-            assert b'"status":200' in response.data
             assert b'"prediction":null' in response.data
 
         # test with correct payload format
@@ -49,7 +48,6 @@ def test_predict_endpoint(
         response = c.get("/predict", query_string=query_string)
 
         # is it possible to avoid hardcoding the expected prediction?
-        assert b'"status":200' in response.data
         assert b"prediction" in response.data
         assert b'"prediction":null' not in response.data
-        assert b'"body":{"prediction":[' in response.data
+        assert b'{"prediction":[' in response.data
