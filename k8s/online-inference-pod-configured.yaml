@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: online-inference
+  labels:
+    name: online-inference-confmap
+spec:
+  containers:
+    - name: online-inference
+      image: sudotouchwoman/wbcd-online-inference:v2
+      # first, sleep for a half a minute and then run the server in daemon mode
+      # then, suspend for another half a minute and trigger an error by trying
+      # to open a non-existent file
+      # this is used to demonstrate the readiness/liveness probes
+      command: ["/bin/sh", "-c"]
+      args:
+        [
+          "sleep 30; gunicorn --workers=1 --threads=1 --timeout=300 --bind 0.0.0.0:5000 wsgi:app &; sleep 30; cat non-existent-file",
+        ]
+      # environmental variables used to configure the application
+      # are collected from the configMap
+      # note that the key names may differ from the actual envar names
+      env:
+        - name: ARTIFACT
+          valueFrom:
+            configMapKeyRef:
+              name: inference-config
+              key: google_drive_model_pickle
+        - name: TABLE_SCHEMA
+          valueFrom:
+            configMapKeyRef:
+              name: inference-config
+              key: google_drive_input_schema
+        - name: STATS
+          valueFrom:
+            configMapKeyRef:
+              name: inference-config
+              key: google_drive_input_stats
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: inference-config
+              key: logging_level
+      # resource limits for the application
+      # this one does not require much space/CPU time
+      resources:
+        limits:
+          memory: "128Mi"
+          cpu: "500m"
+      ports:
+        - containerPort: 5000
+
+      livenessProbe:
+        httpGet:
+          path: /health
+          port: 5000
+        initialDelaySeconds: 40
+        periodSeconds: 15
+      readinessProbe:
+        exec:
+          command:
+            - "cat /app/logs/*.log | grep -q 'Application configured'"
+        initialDelaySeconds: 20
+        periodSeconds: 5
