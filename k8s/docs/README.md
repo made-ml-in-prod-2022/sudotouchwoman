@@ -95,3 +95,45 @@ In order to achieve the case when pods are superseded one by one, `maxUnavailabl
 Note the event log in deployment description:
 
 ![rolling-deployment](./screenshots/deployment-rolling.jpg)
+
+
+### __Ingress Controllers and Services__
+
+In order to access the pods externally, one should create a resource called `Service`. There are 4 primary types of services, but a common practice is creating one with a default type (`--type=ClusterIP`, non-routable) and forward the incoming requests to the underlying deployment/pods through a `LoadBalancer` service. There may be many balancers, but another good practice is to use so called `Ingress` resource with rules for an ingress controller. Ingress controller is a `LoadBalancer` service accessible externally which serves as a proxy. In this project, `nginx` balancer was used. One can create rules for the balancer to forward incoming requests to a specific `Service`. See `wbcd-service.yaml` and `ingress-hosts.yaml` for details. It is possible and common to use ingress with a hostname, so that your apllications are accessible through ordinary human-readable names. As there was no domain name when I was playing with the cluster, all the incoming traffic for cluster's public IP got redirected.
+
+![ExternalClusterAccess](./screenshots/ingress-application-access.jpg)
+
+### __Kubernetes cheatsheet__
+
+```
+export KUBECONFIG=$KUBECONFIG:$HOME/<config-path>
+kubectl cluster-info
+kubectl get pod (alias for pods)
+kubectl get ing (alias for ingress)
+kubectl get ns (alias for namespaces)
+kubectl get deploy -n <namespace> (alias for deployment)
+kubectl get all
+kubectl apply -f <manifest.yaml>
+kubectl delete -f <manifest.yaml>
+kubectl logs <ingress-nginx-controller-pod> -n <ingress-nginx-namespace>
+kubectl describe <resource, like pod, node or deployment>
+kubectl config set-context --current --namespace=<namespace-name> (to omit -n flags)
+```
+
+To access k8s Dashboard:
+```
+kubectl proxy
+kubectl get secret $(kubectl get sa dashboard-sa -o jsonpath='{.secrets[0].name}') -o jsonpath='{.data.token}' | base64 --decode
+```
+
+You will probably have to run these commands in separate shells as the first one blocks
+
+Then paste the obtained token in the dashboard UI at
+http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#/workloads?namespace=default
+
+The token expires sometimes thus one may have to rerun the last command to get new token
+Note that get secret should be run at the `default` namespace/context, otherwise one may face the following result:
+
+```
+Error from server (NotFound): serviceaccounts "dashboard-sa" not found
+```

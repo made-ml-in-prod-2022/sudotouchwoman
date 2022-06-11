@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: wbcd-api
 spec:
-  replicas: 4
+  replicas: 2
   strategy:
     type: "RollingUpdate"
     rollingUpdate:
