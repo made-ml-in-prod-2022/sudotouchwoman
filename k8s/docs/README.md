@@ -132,7 +132,7 @@ Then paste the obtained token in the dashboard UI at
 http://localhost:8001/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/#/workloads?namespace=default
 
 The token expires sometimes thus one may have to rerun the last command to get new token
-Note that get secret should be run at the `default` namespace/context, otherwise one may face the following result:
+Note that get secret should be run in the `default` namespace/context, otherwise one may face the following result:
 
 ```
 Error from server (NotFound): serviceaccounts "dashboard-sa" not found
