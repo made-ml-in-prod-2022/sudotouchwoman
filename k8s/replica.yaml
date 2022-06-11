@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: wbcd-api
+spec:
+  replicas: 7
+  selector:
+    app: wbcd-api
+  template:
+    metadata:
+      name: wbcd-api
+      labels:
+        app: wbcd-api
+    spec:
+      containers:
+        - name: wbcd-api
+          image: sudotouchwoman/wbcd-online-inference:v1
+          resources:
+            limits:
+              memory: "128Mi"
+          ports:
+          - containerPort: 5000
+          env:
+            - name: ARTIFACT
+              valueFrom:
+                configMapKeyRef:
+                  name: inference-config
+                  key: vkcs_s3_model_pickle
+            - name: TABLE_SCHEMA
+              valueFrom:
+                configMapKeyRef:
+                  name: inference-config
+                  key: vkcs_s3_input_schema
+            - name: STATS
+              valueFrom:
+                configMapKeyRef:
+                  name: inference-config
+                  key: vkcs_s3_input_stats
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: inference-config
+                  key: logging_level
+            # envars can be also set right here
+            - name: LOGFILE
+              value: logs/server
+            - name: LOG_STREAM
+              value: "True"
+          # the same endpoint is used to check whether
+          # the application is alive and running
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 2
+          # readiness probe will succeed when the first sleep is finished and the server loads
+          # all config/data on startup (takes about a second or two)
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 1
+            periodSeconds: 10

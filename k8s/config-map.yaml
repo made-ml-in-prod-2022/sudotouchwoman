@@ -4,6 +4,9 @@ metadata:
   name: inference-config
 data:
   logfile: logs/server
+  vkcs_s3_model_pickle: https://ml-wbcd-data.hb.bizmrg.com/artifact.pkl
+  vkcs_s3_input_schema: https://ml-wbcd-data.hb.bizmrg.com/configs/tabular-schema.json
+  vkcs_s3_input_stats: https://ml-wbcd-data.hb.bizmrg.com/configs/statistics.json
   google_drive_model_pickle: https://drive.google.com/uc?export=download&id=1RQ2wVglhUZo6Ww8bmurmoXzzop14obmU
   google_drive_input_schema: https://drive.google.com/uc?export=download&id=1NFgA5jjh6SIRF6qbRU8UfTaBtFnr4xjk
   google_drive_input_stats: https://drive.google.com/uc?export=download&id=1XohGwqfpCVDULdUnlegfe_h0JymhWPeT

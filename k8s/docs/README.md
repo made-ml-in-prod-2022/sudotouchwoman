@@ -5,7 +5,7 @@ from `online_inference` section. The `README` shows the results of my experiment
 
 __VK Cloud Platform__ was used to host the cluster (it is really nice of them
 to provide a trial with free balance for testing!). After signing up for their platform I
-created a cluster with 3 worker nodes and a single master node. They provide a `kubeconfig` file
+created a cluster with 2 worker nodes and a single master node. They provide a `kubeconfig` file
 to access the cluster in CLI. Moreover, `VSCode` has an extension for k8s with a nice UI.
 I could have used `Lens` to monitor and configure the cluster, but it would have implied much headache
 as I primarily work through WSL2.
@@ -40,3 +40,58 @@ access its internals (say, logs). For such debugging purposes it is appropriate,
 or port forwarding into pods is generally discouraged and considered a bad practice.
 
 ![SSH](./screenshots/ssh-tunelling.jpg)
+
+
+### __ReplicaSets and probes__
+
+I encountered a weird bug during debugging the probes API: the URL for data stored in my google drive
+turned out to be inaccessible from the pods, which prevented them from passing healthchecks.
+It is weird as the same URLs were ok earlier, I guess that Google Drive API considers me trying to DDoS it, lol.
+
+As I have already started interacting with VKCS, creating an s3 ice bucket seemed to be a good idea.
+Current application does not support the s3 protocol, however, the files are accesed via public direct links.
+
+`online-inference-configured.yaml` contains an example of application with delayed startup (simulating db connection
+initialization or other long-lasting resource aquisition types). The app itself is run in a daemon mode (note the `&`) and
+pod is aborted with an attempt to open a non-existent file after the actual startup. This leads to k8s trying to restart the
+pod again and again, as the liveness probe fails.
+
+![ReplicaSet](./screenshots/probes.jpg)
+
+Replica set had some highlights aswell: given 2 worker nodes and a limit of `500m CPU`, the third pod just
+did not start and was tagged as `scheduled` indefinitely (logs said that the CPU limits were insufficient).
+However, after reducing this limit to `250m` all the containers were up and running.
+
+![ReplicaSet](./screenshots/replica-set.jpg)
+
+Manual scaling for replicas works in the following way:
+
+1. Given a bigger number of pods and another `container` specs (say, image version), `NewPodCount - CurrentPodCount` new pods
+will be spawned so that the total number of pods fits the new requested amount.
+1. Given a smaller number of pods, in contrary, replica set will merely kill several pods so that the final pod number
+fits the requested amount too.
+
+That is when deployments enter the game: they provide us with opportunity to dynamically update specs of containers in
+an expected way.
+
+### __Deployments and rollout strategies__
+
+By default k8s use so called `RollingUpdate` strategy, which implies creation of extra pods during an update.
+This provides better accesibility but is costly in terms of time and hardware (see `rolling-deployment.yaml`).
+
+One can adjust this behavior with `maxSurge` and `maxUnavailable` parameters and change the rollout strategy
+to `Recreate` with the according `type` value. When recreating, all of the old pods are killed at once,
+and new pods supersede them at once too (see `recreate-deployment.yaml`).
+
+![recreate-deployment](./screenshots/deployment-recreate.jpg)
+
+In order to achieve the situation when all pods from previous and new replicas are present, one should
+set `maxSurge` to the new pod count and `maxUnavailable` to zero, note the event log in the screenshot below:
+(__Note:__ the manifest name was changed later for better readability. It can be found at `green-blue-deployment.yaml`)
+
+![blue-green-deployment](./screenshots/deployment-blue-green.jpg)
+
+In order to achieve the case when pods are superseded one by one, `maxUnavailable` should be set to zero, but `maxSurge` must be 1.
+Note the event log in deployment description:
+
+![rolling-deployment](./screenshots/deployment-rolling.jpg)
