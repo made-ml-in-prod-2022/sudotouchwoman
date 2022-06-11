@@ -2,6 +2,10 @@ name: Run linting and unit-tests
 
 on:
   push:
+    paths-ignore:
+      - "**.md"
+      - "**.jpg"
+      - "**.png"
     branches: [main, homework*]
 
 jobs:
