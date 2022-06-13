@@ -68,10 +68,10 @@ def default_logger(name: str) -> logging.Logger:
 log = default_logger(__name__)
 
 
-def make_app(s: AppConfig = AppConfig()) -> Flask:
+def make_app(settings: AppConfig = AppConfig()) -> Flask:
     from .view import application_factory
 
     log.info(msg="Application is in the oven")
-    log.info(msg=f"Recieved application config: {s}")
-    app = application_factory(settings=s)
+    log.info(msg=f"Recieved application config: {settings}")
+    app = application_factory(settings=settings)
     return app

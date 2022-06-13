@@ -34,7 +34,7 @@ Server has `/health` endpoint (use with __GET__ request) which can be used to ch
 Server responses with the following signature:
 
 ```
-{"status": 200 (or 400 on error), "body": {...}}
+{"body": ...}
 ```
 
 ## __Input format__
@@ -95,7 +95,7 @@ __UPD: pull the image from Docker Hub__
 Image was pushed to Docker hub, information is avaliable [there](https://hub.docker.com/r/sudotouchwoman/wbcd-online-inference).
 
 ```
-$ docker pull sudotouchwoman/wbcd-online-inference
+$ docker pull sudotouchwoman/wbcd-online-inference:v2
 ```
 
 ## __Pytest+Flask__
@@ -120,3 +120,5 @@ $ python -m pytest
 __NOTE:__ In order to actually run all tests _without skipping any_, one should
 provide the testbed with __model pickle__ at `data/artifact.pkl`. Unit and functional tests for
 the applcication _do not_ test the model's performance and robustness, only the ones of the backend.
+
+The artifact obtained for `linux/x64` can be accesed [here](https://drive.google.com/drive/folders/1h_XjtQuu6EDI-w4qV6poG5EnVAFYK6md?usp=sharing).
