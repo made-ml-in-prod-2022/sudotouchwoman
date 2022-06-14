@@ -8,22 +8,32 @@ First, make sure you have your dependencies installed with the following command
 $ pip install -r requirements.txt
 ```
 
+Server is configured using environmental variables, and by default, flask will try to locate `.env` and `.flaskenv` files in the running directory (these are gitignored). One may wish to override these values or provide another `*.env` file path. Regarding the latter, application additionally looks for `ENV_PATH` variable with a path to a custom `*.env` file. For example, one can execute: 
+
+```
+export ENV_PATH=env/dev.env
+```
+
+Below the envars used are listed with some default values (copy-paste in your `.env` file):
+
+```
+LOGFILE=server
+ARTIFACT=https://drive.google.com/uc?export=download&id=1RQ2wVglhUZo6Ww8bmurmoXzzop14obmU
+TABLE_SCHEMA=configs/tabular-schema.json
+STATS=configs/statistics.json
+LOG_FILE=True
+LOG_STREAM=False
+LOG_LEVEL=debug
+```
+
+Make sure that the application can access the required files, otherwise it will continue working but write encountered errors in the specified `LOGFILE` (app is writing to `server.log` by default).
+
+
 Flask application then can be run from `online_inference` dir as follows:
 
 ```
 $ flask run
 ```
-
-Server is configured using environmental variables, and by default, flask will try to locate `.env` and `.flaskenv` files in the running directory. Below the used envars are listed with some default values:
-
-```
-LOGFILE="server.log"
-ARTIFACT="data/log-reg.pkl"
-TABLE_SCHEMA="configs/tabular-schema.json"
-STATS="configs/statistics.json"
-```
-
-Make sure that the application can access the required files, otherwise it will continue working but write encountered errors in the specified `LOGFILE` (app is writing to `server.log` by default).
 
 ## __Check if the application has start up correctly__
 
@@ -45,7 +55,7 @@ Consider the following example with testing client:
 
 ![connecting to server](./screenshots/client-server.png)
 
-Testing client can be run from the same location as the backend and has and expects the following arguments:
+Testing client can be run from the same location as the backend and has the following arguments:
 
 ```
 -h, --host (string) - server host (127.0.0.1 by default)
@@ -59,7 +69,7 @@ Sample payload can be found at `data/payload.json`, which is the default value o
 
 The next step is to wrap the server into a `Dockerfile` and run with `docker-compose`
 
-One may find corresponding files in the server root directory. App is run in the container using `gunicorn` server. At current design, all the data (model artifact, statistics, input schema) are collected during `image` build as the application expects local filenames for data sources. It would be a nice idea to separate the data collection during startup from the local filesystem.
+One may find corresponding files in the server root directory. App is run in the container using `gunicorn` server. At current design, all the data (model artifact, statistics, input schema) are collected during `image` build as the application expects local filenames for data sources. It would be a nice idea to separate the data collection during startup from the local filesystem).
 
 In order to build the image locally and run it, use:
 
@@ -78,10 +88,11 @@ $ docker build -t NAME:TAG .
 Note that `NAME` and `TAG` should be a valid image name and image tag, respectively.
 Container requires several configuration options provided via environmental variables.
 These are stored in `env/` directory as `.env` files for convenience. In order to run the
-container locally with specified arguments, use:
+container locally with specified arguments, use (given that the image is not present on your device, 
+docker will try to locate and pull the image itself):
 
 ```
-$ docker run --env-file env/dev.env -p 5000:5000 sudotouchwoman/wbcd-online-inference
+$ docker run --env-file env/dev.env -p 5000:5000 sudotouchwoman/wbcd-online-inference:v2
 ```
 
 Port forwarding is required to access the application inside the container from host. You may
@@ -108,7 +119,7 @@ Consider the example below:
 ![lazy/yieldings fixtures](./screenshots/lazy-fixtures.jpg)
 
 `Flask` can ease testing routines with `test_client()` method
-of application instances, which in turn yield object with `get()`/`post()` methods
+of application instances, which in turn yields object with `get()`/`post()` methods
 acting like an actual service client.
 
 In order to run all tests, use:
