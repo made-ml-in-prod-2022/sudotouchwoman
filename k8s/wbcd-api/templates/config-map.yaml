@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+data:
+  logfile: logs/server
+  model_pickle: {{ .Values.configmap.model_pickle }}
+  input_schema: {{ .Values.configmap.input_schema }}
+  input_stats: {{ .Values.configmap.input_stats }}
+  log_to_file: "False"
+  log_stdout: "True"
+  logging_level: info

@@ -1,0 +1,24 @@
+# Default values for wbcd-api Helm Chart
+
+# values for Deployment
+
+container:
+  image: sudotouchwoman/wbcd-online-inference:v2
+
+rolling_update:
+  max_surge: 1
+  max_unavailable: 0
+
+replicas: 3
+environment: dev
+
+limits:
+  cpu: "100m"
+  memory: "128Mi"
+
+# values for ConfigMap
+
+configmap:
+  model_pickle: https://ml-wbcd-data.hb.bizmrg.com/artifact.pkl
+  input_schema: https://ml-wbcd-data.hb.bizmrg.com/configs/tabular-schema.json
+  input_stats: https://ml-wbcd-data.hb.bizmrg.com/configs/statistics.json

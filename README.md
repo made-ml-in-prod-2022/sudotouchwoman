@@ -48,3 +48,5 @@ As the model artifact requires additional dependencies from `ml_project`, the `s
 `k8s` directory contains manifests for Kubernetes in `yaml` format and docs with screenshots.
 Cluster was hosted at `VK Cloud Solutions` and the container image used is the one built with `Docker` for application at `online_inference` section.
 Keywords: `pod`, `ReplicaSet`, `Deployment`, `Service`, `Ingress`, `nginx`.
+
+`terraform` directory contains manifests for Terraform used for provisioning a cluster at `VK Cloud Solutions` (I used their [Terraform Provider](https://github.com/vk-cs/terraform-provider-vkcs)).
