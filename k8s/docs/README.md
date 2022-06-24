@@ -137,3 +137,48 @@ Note that get secret should be run in the `default` namespace/context, otherwise
 ```
 Error from server (NotFound): serviceaccounts "dashboard-sa" not found
 ```
+
+### __Helm Chart__
+
+Notes: in order to shut the helm up one is likely to forbid group/other users access to the current `kubeconfig` file. This can be achieved with:
+
+```
+chmod go-r ~/.kube/<kubeconfig-name>
+```
+
+`wbcd-api` directory contains the `Chart.yaml` with the helm configuration and
+`values.yaml` with some default values used to configure the actual `k8s` resources. In this case, there is a `ConfigMap`, `Deployment` and `Service`.
+
+One can create helm release with the following command:
+
+```
+helm install <application-name> <chart-dir> [--set <variable-name> <variable-value>]
+```
+
+`--set` can be used to override the values specified in `values.yaml`.
+It is also possible to package the chart dir with all manifests into a `tar` archive for easier distribution with `helm package`.
+
+![helm-chart](./screenshots/helm.jpg)
+
+
+### __Terraform for cluster provision__
+
+The manifests are located at `terraform` section at the top level of the project. Some screenshots are listed below (these are fairly self-explanatory).
+In this example, such resources as cluster subnetwork, external network and router were created earlier and accessed with `data` entries in `conf.tf`.
+
+Applying the TF configuration to the API:
+
+![tf-apply](./screenshots/tf-apply.jpg)
+
+The results (cluster took about `10m` to create, so the info did not fit a single screenshot):
+
+![tf-applying](./screenshots/tf-applied.jpg)
+
+Destroying the infrastructure:
+
+![tf-destroy](./screenshots/tf-destroy.jpg)
+
+Cluster destruction process in web UI (node group already removed):
+
+![tf-reconfiduring-cluster](./screenshots/tf-reconfiguring-cluster.jpg)
+
