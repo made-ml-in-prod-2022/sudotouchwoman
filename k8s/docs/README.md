@@ -166,6 +166,54 @@ It is also possible to package the chart dir with all manifests into a `tar` arc
 The manifests are located at `terraform` section at the top level of the project. Some screenshots are listed below (these are fairly self-explanatory).
 In this example, such resources as cluster subnetwork, external network and router were created earlier and accessed with `data` entries in `conf.tf`.
 
+Note that TF needs user credentials in order to use the APIs. In this case, `VKCS` provided me with a `mcs_provider.tf` file which looked like this:
+
+```
+terraform {
+  required_providers {
+    openstack = {
+      source = "terraform-provider-openstack/openstack"
+    }
+    vkcs = {
+      source  = "vk-cs/vkcs"
+      version = "~> 0.1.0"
+    }
+  }
+}
+
+provider "openstack" {
+  # Your user account.
+  user_name = "n.teterin@vk.team"
+
+  # The password of the account
+  password = "cloud-password"
+
+  # The indicator of the location of users.
+  user_domain_id = "users"
+
+  # API endpoint
+  # Terraform will use this address to access the VK Cloud Solutions api.
+  auth_url = "https://infra.mail.ru:35357/v3/"
+
+  # use octavia to manage load balancers
+  use_octavia = true
+
+  # Region name
+  region = "RegionOne"
+}
+
+provider "vkcs" {
+  # Your user account.
+  username = "n.teterin@vk.team"
+
+  # The password of the account
+  password = "cloud-password"
+
+  # Region name
+  region = "RegionOne"
+}
+```
+
 Applying the TF configuration to the API:
 
 ![tf-apply](./screenshots/tf-apply.jpg)
