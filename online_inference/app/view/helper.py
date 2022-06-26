@@ -1,5 +1,5 @@
 from typing import List, Optional, Dict, Union
-from flask import current_app
+from flask import current_app, Response
 
 import pandas as pd
 
@@ -15,15 +15,15 @@ def operating() -> bool:
 
 
 def empty_response():
-    return dict(status=400, body=None)
+    return Response("Bad request", status=400)
 
 
 def healthy_response():
-    return dict(status=200)
+    return Response("Healthy", status=200)
 
 
 def prediction_response(prediction: Optional[List]):
-    return dict(status=200, body=dict(prediction=prediction))
+    return dict(prediction=prediction)
 
 
 def validate_payload(payload: List[Dict[str, Union[str, float]]]) -> bool:

@@ -3,6 +3,8 @@
 ## __Project structure__
 
 ```
+├── k8s                 <- Kubernetes Manifests
+│   └── docs
 ├── ml_project          <- ML pipeline (train + batch inference)
 │   ├── configs         <- Configuration yaml files
 │   ├── data            <- Data storage (raw + synthetic)
@@ -42,3 +44,9 @@ that the target variable (cancer type of the patient) is linearly separable ([no
 
 `online_inference` directory contains Flask web-application that implements REST API for inference.
 As the model artifact requires additional dependencies from `ml_project`, the `src` directory with pipeline sources is copied to `online_inference` (in sake of simplicity and in order to reduce  potential headache with distribution. It is preferable to wrap shared dependencies into a distributed python package but in this example in seemed to bring too much overhead).
+
+`k8s` directory contains manifests for Kubernetes in `yaml` format and docs with screenshots.
+Cluster was hosted at `VK Cloud Solutions` and the container image used is the one built with `Docker` for application at `online_inference` section.
+Keywords: `pod`, `ReplicaSet`, `Deployment`, `Service`, `Ingress`, `nginx`.
+
+`terraform` directory contains manifests for Terraform used for provisioning a cluster at `VK Cloud Solutions` (I used their [Terraform Provider](https://github.com/vk-cs/terraform-provider-vkcs)).

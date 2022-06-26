@@ -1,0 +1,83 @@
+# start the application with a lag of 10s, then abort it after 40s
+# use probes to inspect the pod status
+# in this simple setup, application should be killed and recreated each time
+apiVersion: v1
+kind: Pod
+metadata:
+  name: online-inference
+  labels:
+    name: online-inference-confmap
+spec:
+  containers:
+    - name: online-inference
+      image: sudotouchwoman/wbcd-online-inference:v2
+      # first, sleep for a half a minute and then run the server in daemon mode
+      # then, suspend for another half a minute and trigger an error by trying
+      # to open a non-existent file
+      # this is used to demonstrate the readiness/liveness probes
+      command:
+        - "/bin/sh"
+        - "-c"
+      args:
+        - sleep 10;
+          gunicorn --workers=1 --threads=1 --timeout=300 --bind 0.0.0.0:5000 wsgi:app &
+          sleep 40;
+          cat non-existent-file;
+      # environmental variables used to configure the application
+      # are collected from the configMap
+      # note that the key names may differ from the actual envar names
+      env:
+        - name: ARTIFACT
+          valueFrom:
+            configMapKeyRef:
+              name: inference-config
+              key: google_drive_model_pickle
+        - name: TABLE_SCHEMA
+          valueFrom:
+            configMapKeyRef:
+              name: inference-config
+              key: google_drive_input_schema
+        - name: STATS
+          valueFrom:
+            configMapKeyRef:
+              name: inference-config
+              key: google_drive_input_stats
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: inference-config
+              key: logging_level
+        # envars can be also set right here
+        - name: LOGFILE
+          value: logs/server
+        - name: LOG_FILE
+          value: "True"
+      # resource limits for the application
+      # this one does not require much space/CPU time
+      resources:
+        limits:
+          memory: "128Mi"
+          cpu: "500m"
+      ports:
+        - containerPort: 5000
+
+      # the same endpoint is used to check whether
+      # the application is alive and running
+      # the liveness probe will fail when the main process terminates with non-zero
+      # exit code (cat non-existent-file, to be precise)
+      # at that moment, the server should stop thus the connection will be refused
+      livenessProbe:
+        httpGet:
+          path: /health
+          port: 5000
+        initialDelaySeconds: 15
+        periodSeconds: 5
+        timeoutSeconds: 2
+      # readiness probe will succeed when the first sleep is finished and the server loads
+      # all config/data on startup (takes about a second or two)
+      readinessProbe:
+        httpGet:
+          path: /health
+          port: 5000
+        initialDelaySeconds: 1
+        periodSeconds: 10

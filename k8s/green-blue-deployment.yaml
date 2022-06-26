@@ -1,0 +1,75 @@
+# first, all new pods are run so that old pods + new pods are present at some point
+# then old pods are killed
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wbcd-api
+spec:
+  replicas: 4
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxSurge: 4
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: wbcd-api
+  template:
+    metadata:
+      labels:
+        app: wbcd-api
+        env: dev
+        kind: inference
+    spec:
+      containers:
+      - name: wbcd-api
+        image: sudotouchwoman/wbcd-online-inference:v2
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 5000
+        env:
+          - name: ARTIFACT
+            valueFrom:
+              configMapKeyRef:
+                name: inference-config
+                key: vkcs_s3_model_pickle
+          - name: TABLE_SCHEMA
+            valueFrom:
+              configMapKeyRef:
+                name: inference-config
+                key: vkcs_s3_input_schema
+          - name: STATS
+            valueFrom:
+              configMapKeyRef:
+                name: inference-config
+                key: vkcs_s3_input_stats
+          - name: LOG_LEVEL
+            valueFrom:
+              configMapKeyRef:
+                name: inference-config
+                key: logging_level
+          # envars can be also set right here
+          - name: LOGFILE
+            value: logs/server
+          - name: LOG_STREAM
+            value: "False"
+        # the same endpoint is used to check whether
+        # the application is alive and running
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 2
+        # readiness probe will succeed when the first sleep is finished and the server loads
+        # all config/data on startup (takes about a second or two)
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 1
+          periodSeconds: 10

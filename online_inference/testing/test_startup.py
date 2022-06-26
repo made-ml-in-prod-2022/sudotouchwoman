@@ -37,8 +37,8 @@ def test_invalid_startup(invalid_application_config, config_keys):
         # if startup was aborted, app
         # should not respond with 200 on healthcheck
         response = c.get("/health")
-        assert response.status_code == 200
-        assert b'{"status":200}' not in response.data
+        assert response.status_code == 400
+        assert b"Bad request" in response.data
 
 
 @pytest.mark.parametrize(
@@ -72,4 +72,4 @@ def test_with_tmp_config(config, config_keys):
         # app should be running and healthy
         response = c.get("/health")
         assert response.status_code == 200
-        assert b'{"status":200}' in response.data
+        assert b"Healthy" in response.data

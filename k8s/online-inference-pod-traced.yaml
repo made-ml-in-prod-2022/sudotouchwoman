@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: online-inference-traced
+  labels:
+    name: online-inference-confmap
+spec:
+  containers:
+    # this pod will write logs to a file, which can be later
+    # examined via ssh
+    # (somehow I cannot find a proper way to access the service
+    # from the outside except port forwarding)
+    - name: online-inference
+      image: sudotouchwoman/wbcd-online-inference:v2
+      # environmental variables used to configure the application
+      # are collected from the configMap
+      # note that the key names may differ from the actual envar names
+      env:
+        - name: ARTIFACT
+          valueFrom:
+            configMapKeyRef:
+              name: inference-config
+              key: google_drive_model_pickle
+        - name: TABLE_SCHEMA
+          valueFrom:
+            configMapKeyRef:
+              name: inference-config
+              key: google_drive_input_schema
+        - name: STATS
+          valueFrom:
+            configMapKeyRef:
+              name: inference-config
+              key: google_drive_input_stats
+        - name: LOG_LEVEL
+          value: debug
+        - name: LOG_FILE
+          value: "True"
+        - name: LOGFILE
+          value: logs/server
+      # resource limits for the application
+      # this one does not require much space/CPU time
+      resources:
+        limits:
+          memory: "128Mi"
+          cpu: "500m"
+      ports:
+        - containerPort: 5000

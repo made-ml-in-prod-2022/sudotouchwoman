@@ -1,0 +1,74 @@
+# Deployment manifest handled by helm
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deployment
+spec:
+  replicas: {{ .Values.replicas }}
+  strategy:
+    type: "RollingUpdate"
+    rollingUpdate:
+      maxSurge: {{ .Values.rolling_update.max_surge }}
+      maxUnavailable: {{ .Values.rolling_update.max_unavailable }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        env: {{ .Values.environment }}
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-web
+        image: {{ .Values.container.image }}
+        resources:
+          limits:
+            memory: {{ .Values.limits.memory }}
+            cpu: {{ .Values.limits.cpu }}
+        ports:
+        - containerPort: 5000
+        env:
+          - name: ARTIFACT
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-config
+                key: model_pickle
+          - name: TABLE_SCHEMA
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-config
+                key: input_schema
+          - name: STATS
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-config
+                key: input_stats
+          - name: LOG_LEVEL
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-config
+                key: logging_level
+          # envars can be also set right here
+          - name: LOGFILE
+            value: logs/server
+          - name: LOG_STREAM
+            value: "True"
+        # the same endpoint is used to check whether
+        # the application is alive and running
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 2
+        # readiness probe will succeed when the first sleep is finished and the server loads
+        # all config/data on startup (takes about a second or two)
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 1
+          periodSeconds: 10
